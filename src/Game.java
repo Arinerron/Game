@@ -9,6 +9,12 @@ public class Game extends JPanel {
     public boolean running = false;
     public JFrame frame = null;
 
+    public int width = 20 * 8;
+    public int height = 20 * 6;
+    public int real_width = 0;
+    public int real_height = 0;
+
+    public BufferedImage image = null;
     public BufferedImage tile_dirt = null;
     public BufferedImage character_left = null;
     public BufferedImage character_right = null;
@@ -38,10 +44,20 @@ public class Game extends JPanel {
 
         this.frame = new JFrame("Game");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setSize(500, 500);
-        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //this.frame.setPreferredSize(500, 500);
+        this.frame.setExtendedState(this.frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        this.frame.setResizable(false);
         this.frame.add(this);
         this.frame.setBackground(Color.BLACK);
+        this.frame.pack();
+
+        Dimension size = this.frame.getContentPane().getSize();
+        this.real_width = (int)size.getWidth();
+        this.real_height = (int)size.getHeight();
+
+        System.out.println("width=" + this.real_width + " && height=" + this.real_height);
+        System.out.println("framew=" + frame.getWidth() + " && frameh=" + frame.getHeight() + " && panelw=" + this.getWidth() + " && panelh=" + this.getHeight());
+
         KeyListener listener = new KeyListener() {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_W)
@@ -56,10 +72,20 @@ public class Game extends JPanel {
                     System.exit(0);
             }
 
-            public void keyReleased(KeyEvent e) { System.out.println("released"); }
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_W)
+                    w = false;
+                else if(e.getKeyCode() == KeyEvent.VK_S)
+                    s = false;
+                else if(e.getKeyCode() == KeyEvent.VK_D)
+                    d = false;
+                else if(e.getKeyCode() == KeyEvent.VK_A)
+                    a = false;
+            }
 
-            public void keyTyped(KeyEvent e) { System.out.println("typed"); }
+            public void keyTyped(KeyEvent e) {}
         };
+
         this.addKeyListener(listener);
         frame.addKeyListener(listener);
 
@@ -69,9 +95,14 @@ public class Game extends JPanel {
         this.requestFocus();
     }
 
+    public void updateImage() {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    }
+
     // draw game
     public void paintComponent(Graphics g) {
-        g.drawImage(this.tile_dirt, 0, 0, null);
+        if(this.image != null)
+            g.drawImage(this.image, 0, 0, null);
     }
 
     public BufferedImage getImage(String name) throws Exception {
