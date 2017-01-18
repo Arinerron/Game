@@ -30,7 +30,7 @@ public class Game extends JPanel {
     public int y = 0;
     public boolean visible = true;
 
-    // new game instance
+    // initialization
     public Game() {
         this.running = true;
 
@@ -95,16 +95,18 @@ public class Game extends JPanel {
         this.requestFocus();
     }
 
+    // update the image variable so it knows what to draw
     public void updateImage() {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     }
 
-    // draw game
+    // draw whatever is in the image variable
     public void paintComponent(Graphics g) {
         if(this.image != null)
             g.drawImage(this.image, 0, 0, null);
     }
 
+    // loads a bufferedimage in by filename
     public BufferedImage getImage(String name) throws Exception {
         BufferedImage in = ImageIO.read(new File("../res/" + name + ".png"));
 
