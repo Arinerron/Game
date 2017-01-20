@@ -43,7 +43,8 @@ public class Game extends JPanel {
     public Character[][] map = new Character[100][50];
     public double x = 0;
     public double y = 0;
-    public double speed = 0.5;
+    public double speed = 0.0;
+    public double acceleration = 0.015;
     public boolean visible = true;
 
     // initialization
@@ -92,14 +93,19 @@ public class Game extends JPanel {
             }
 
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_W)
+                if(e.getKeyCode() == KeyEvent.VK_W) {
+                    speed = 0;
                     w = false;
-                else if(e.getKeyCode() == KeyEvent.VK_S)
+                } else if(e.getKeyCode() == KeyEvent.VK_S) {
+                    speed = 0;
                     s = false;
-                else if(e.getKeyCode() == KeyEvent.VK_D)
+                } else if(e.getKeyCode() == KeyEvent.VK_D) {
+                    speed = 0;
                     d = false;
-                else if(e.getKeyCode() == KeyEvent.VK_A)
+                } else if(e.getKeyCode() == KeyEvent.VK_A) {
+                    speed = 0;
                     a = false;
+                }
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -134,14 +140,27 @@ public class Game extends JPanel {
                     tick();
                     updateImage();
 
-                    if(w)
-                        y = y + speed;
-                    if(s)
-                        y = y - speed;
-                    if(a)
-                        x = x + speed;
-                    if(d)
-                        x = x - speed;
+                        System.out.println(speed);
+
+                    if(w || s || a || d) {
+                        if(speed < 0.5)
+                            speed += acceleration;
+                        else if(speed > 0.5)
+                            speed = 0.5;
+
+                        if(w) {
+                            y = y + speed;
+                        }
+                        if(s) {
+                            y = y - speed;
+                        }
+                        if(a) {
+                            x = x + speed;
+                        }
+                        if(d) {
+                            x = x - speed;
+                        }
+                    }
 
                     /*if(getTile((int)(x / 20), (int)(y / 20)) == '.')
                         speed = 0.05;
