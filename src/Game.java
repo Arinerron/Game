@@ -11,6 +11,7 @@ public class Game extends JPanel {
     public boolean running = false;
     public JFrame frame = null;
 
+    public boolean slideover = true;
     public int rate = 5; // tick is every 100 milis
     public int tick = 0; // current tick
 
@@ -19,7 +20,6 @@ public class Game extends JPanel {
     public int real_width = 0;
     public int real_height = 0;
 
-    // these vars can safely be ignored.
     public double togo = 1;
 	public int wid = 1;
 	public int hei = 1;
@@ -27,6 +27,7 @@ public class Game extends JPanel {
 	public int addy = 1;
 
     public BufferedImage image = null;
+    public BufferedImage tile_null = null;
     public BufferedImage tile_dirt = null;
     public BufferedImage tile_water = null;
     public BufferedImage character_current = null;
@@ -35,30 +36,41 @@ public class Game extends JPanel {
     public BufferedImage character_up = null;
     public BufferedImage character_down = null;
 
+    public boolean clicked = false;
+    public boolean rightclicked = false;
     public boolean w = false;
     public boolean s = false;
     public boolean d = false;
     public boolean a = false;
 
+    public int mousex = 0;
+    public int mousey = 0;
+    public double mousedx = 0;
+    public double mousedy = 0;
+
     public Character[][] map = new Character[100][50];
     public double x = 0;
     public double y = 0;
+    public double spawnx = 0;
+    public double spawny = 0;
+    public boolean visible = true;
+
     public double speed = 0.5;
     public double acceleration = 0.0125;
     public double xacceleration = 0;
     public double yacceleration = 0;
-    public boolean visible = true;
 
     // initialization
     public Game() {
         try {
+            this.tile_null = getImage("tile_null");
             this.tile_dirt = getImage("tile_dirt");
             this.tile_water = getImage("tile_water");
             this.character_left = getImage("character_left");
             this.character_right = getImage("character_right");
             this.character_up = getImage("character_up");
             this.character_down = getImage("character_down");
-            this.character_current = this.character_right; // the default stance
+            this.character_current = this.character_down; // the default stance
 
             loadMap("map.txt");
         } catch(Exception e) {
@@ -92,6 +104,11 @@ public class Game extends JPanel {
                     character_current = character_left;
                 } else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
                     System.exit(0);
+                else if(e.getKeyCode() == KeyEvent.VK_R) {
+                    x = spawnx;
+                    y = spawny;
+                    character_current = character_down;
+                }
             }
 
             public void keyReleased(KeyEvent e) {
@@ -125,6 +142,45 @@ public class Game extends JPanel {
 
             public void focusLost(FocusEvent fe) {}
         };
+
+        this.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if(SwingUtilities.isLeftMouseButton(e))
+                    clicked = true;
+                else if(SwingUtilities.isRightMouseButton(e))
+                    rightclicked = true;
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                if(SwingUtilities.isLeftMouseButton(e))
+                    clicked = false;
+                else if(SwingUtilities.isRightMouseButton(e)) {
+                    rightclicked = false;
+                    mousedx = 0;
+                    mousedy = 0;
+                }
+            }
+
+            public void mouseClicked(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        this.addMouseMotionListener(new MouseMotionListener() {
+            public void mouseMoved(MouseEvent e) {}
+
+            public void mouseDragged(MouseEvent e) {
+                if(rightclicked) {
+                    mousex = e.getX();
+                    mousey = e.getY();
+
+                    if(slideover) {
+                        mousedx = -mousex + (real_width / 2);
+                        mousedy = -mousey + (real_height / 2);
+                    }
+                }
+            }
+        });
 
         this.frame.addFocusListener(focus);
         this.addFocusListener(focus);
@@ -197,10 +253,14 @@ public class Game extends JPanel {
                     c = '#';
                     this.x = i;
                     this.y = x;
+                    this.spawnx = i;
+                    this.spawny = x;
                 }
+                System.out.print(c);
 
                 map[x][i] = c;
             }
+            System.out.println();
         }
 
         this.map = map;
@@ -216,7 +276,8 @@ public class Game extends JPanel {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
 
-        setTile(2, 2, '#');setTile(2, 3, '#');setTile(2, 4, '#');setTile(2, 4, '#');
+        int mx = (int)(this.mousedx / 3) / 3; // I don't know why it need two /4's. TODO: debug.
+        int my = (int)(this.mousedy / 3) / 3;
 
         for(int x = 0; x < map.length; x++) {
             for(int y = 0; y < map[x].length; y++) {
@@ -230,14 +291,17 @@ public class Game extends JPanel {
                         case '.':
                             img = tile_water;
                             break;
+                        default:
+                            img = tile_null;
+                            break;
                     }
                     if(img != null)
-                        g.drawImage(img, (x * 20) + (int)this.x, (y * 20) + (int)this.y, null);
+                        g.drawImage(img, (x * 20) + (int)this.x + mx, (y * 20) + (int)this.y + my, null);
                 }
             }
         }
 
-        g.drawImage(this.character_current, (width / 2) - 10, (height / 2) - 10, null);
+        g.drawImage(this.character_current, (width / 2) - 10 + mx, (height / 2) - 10 + my, null);
 
         g.dispose();
         this.setImage(image);
