@@ -16,6 +16,8 @@ sh run.sh
 - `A` - Move left
 - `S` - Move down
 - `D` - Move right
-- `<SPACE>` - Jump
+- `R` - Respawn
+- `<SPACE>` - Jump (disabled right now)
 - `<RIGHT_CLICK>` - Pan and speed walk
 - `<SHIFT>` - Slow walk
+- `<NUMBER_KEYS>` - Change aspect ratio (DEBUG ONLY)

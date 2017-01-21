@@ -1,0 +1,26 @@
+# Welcome to the tileset file.
+#
+# The pound (#) symbols are comments. They only
+# work if the # is at the beginning of the line.
+# Empty lines are not parsed either.
+#
+# The syntax for this file is:
+# <char> <imagepath> [keywords]
+#
+# The image path is relative to res/ folder.
+# Do not include the file extension (always PNG).
+# If image path is null, it won't render.
+#
+# The OPTIONAL case-insensitive keywords are:
+# - solid - The character can't walk through tile
+# - fluid - The character can walk through tile
+# - dangerous - Kills the character on touch
+# - safe - Doesn't kill the character on touch
+# - spawn - Spawn tile-- character spawns here
+# - replace=<char> - Replaces tile with char
+
+# Default tiles
+? tiles/null safe solid
+S null safe fluid spawn replace=tiles/dirt
+D tiles/dirt safe fluid
+. tiles/water safe fluid

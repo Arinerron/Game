@@ -15,8 +15,8 @@ public class Game extends JPanel {
     public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
 
-    public int width = 20 * 16;
-    public int height = 20 * 9;
+    public int width = 20 * 12; // 16
+    public int height = 20 * 6; // 9
     public int real_width = 0;
     public int real_height = 0;
 
@@ -27,9 +27,8 @@ public class Game extends JPanel {
 	public int addy = 1;
 
     public BufferedImage image = null;
+    public java.util.List<Tile> tiles = new java.util.ArrayList<>();
     public BufferedImage tile_null = null;
-    public BufferedImage tile_dirt = null;
-    public BufferedImage tile_water = null;
     public int character_id = 1;
     public BufferedImage character_current = null;
     public BufferedImage character_spritesheet = null;
@@ -64,7 +63,7 @@ public class Game extends JPanel {
     public double spawny = 0;
     public boolean visible = true;
 
-    public double jumpheight = 20;
+    public double jumpheight = 0; // change to 20 to enable jumping, and 0 to disable.
     public double speed = 0.4;
     public double acceleration = 0.0125;
     public double xacceleration = 0;
@@ -73,13 +72,11 @@ public class Game extends JPanel {
     // initialization
     public Game() {
         try {
-            this.tile_null = getImage("tile_null");
-            this.tile_dirt = getImage("tile_dirt");
-            this.tile_water = getImage("tile_water");
+            this.tile_null = getImage("tiles/null");
 
             this.character_spritesheet = getImage("character_spritesheet");
-            this.character_current = this.character_down; // the default stance
 
+            loadTileset("tileset.txt");
             loadMap("map.txt");
         } catch(Exception e) {
             System.err.println("Failed to load resources. Exiting...");
@@ -89,6 +86,7 @@ public class Game extends JPanel {
 
         this.frame = new JFrame("Game");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         this.frame.setBackground(Color.BLACK);
         this.setBackground(Color.BLACK);
         this.frame.setExtendedState(this.frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -140,6 +138,16 @@ public class Game extends JPanel {
                     space = false;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     speed = 0.4;
+                } else {
+                    try {
+                        int i = Integer.parseInt("" + e.getKeyChar());
+                        width = 2 * 20 * i + 1;
+                        height = 20 * i + 1;
+                        System.out.println("Aspect ratio set to " + width + "x" + height);
+                        recalculate();
+                    } catch(Exception ex) {
+                        // do nothing
+                    }
                 }
             }
 
@@ -149,9 +157,7 @@ public class Game extends JPanel {
         FocusListener focus = new FocusListener() {
             public void focusGained(FocusEvent fe) {
                 if(!running) { // run once-- when game starts
-                    Dimension size = frame.getContentPane().getSize();
-                    real_width = (int)size.getWidth();
-                    real_height = (int)size.getHeight();
+                    recalculate();
                     running = true;
                 }
             }
@@ -287,6 +293,13 @@ public class Game extends JPanel {
         }, rate, rate);
     }
 
+    // generates the variables for frame size
+    public void recalculate() {
+        Dimension size = frame.getContentPane().getSize();
+        real_width = (int)size.getWidth();
+        real_height = (int)size.getHeight();
+    }
+
     // loads a map into memory
     public void loadMap(String name) throws Exception {
         String[] lines = getString(name).split(Pattern.quote("\n"));
@@ -302,12 +315,19 @@ public class Game extends JPanel {
 
             for(int x = 0; x < array.length; x++) {
                 char c = array[x];
-                if(c == 'S') {
-                    c = '#';
-                    this.x = i;
-                    this.y = x;
-                    this.spawnx = i;
-                    this.spawny = x;
+                Tile t = getTile(c);
+                if(t != null) {
+                    if(t.spawn) {
+                        this.x = (double)(x);
+                        this.y = (double)(i);
+                        this.spawnx = (double)x;
+                        this.spawny = (double)i;
+
+                        System.out.println("Spawn set to " + this.x + "," + this.y + ". Notice " + x + "," + this.x + "," + spawnx);
+                    }
+
+                    if(t.replace != null)
+                        c = t.replace;
                 }
 
                 map[x][i] = c;
@@ -315,6 +335,65 @@ public class Game extends JPanel {
         }
 
         this.map = map;
+    }
+
+    // loads a tileset into memory
+    public void loadTileset(String name) throws Exception {
+        String[] lines = getString(name).split(Pattern.quote("\n"));
+        java.util.List<Tile> tiles = new java.util.ArrayList<>();
+
+        for(String line : lines) {
+            if(!line.startsWith("#") && line.length() != 0) {
+                String[] split = line.split(Pattern.quote(" "));
+                Tile tile = new Tile();
+
+                for(int i = 0; i < split.length; i++) {
+                    switch(i) {
+                        case 0:
+                            tile.character = split[i].charAt(0);
+                            break;
+                        case 1:
+                            if(split[i].equalsIgnoreCase("null"))
+                                tile.image = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
+                            else
+                                tile.image = getImage(split[i]);
+                            break;
+                        default:
+                            String[] pair = split[i].split(Pattern.quote("="));
+                            String key = pair[0];
+
+                            switch(key.toLowerCase()) {
+                                case "fluid":
+                                    tile.solid = false;
+                                    break;
+                                case "solid":
+                                    tile.solid = true;
+                                    break;
+                                case "dangerous":
+                                    tile.dangerous = true;
+                                    break;
+                                case "safe":
+                                    tile.dangerous = false;
+                                    break;
+                                case "replace":
+                                    tile.replace = pair[1].charAt(0);
+                                    break;
+                                case "spawn":
+                                    tile.spawn = true;
+                                    break;
+                                default:
+                                    System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
+                                    break;
+                            }
+                            break;
+                    }
+                }
+
+                tiles.add(tile);
+            }
+        }
+
+        this.tiles = tiles;
     }
 
     // next tick
@@ -334,20 +413,13 @@ public class Game extends JPanel {
             for(int y = 0; y < map[x].length; y++) {
                 if(willRender(x, y)) {
                     char val = getTile(x, y);
+                    Tile t = getTile(val);
                     BufferedImage img = null;
-                    switch(val) {
-                        case '#':
-                            img = tile_dirt;
-                            break;
-                        case '.':
-                            img = tile_water;
-                            break;
-                        default:
-                            img = tile_null;
-                            break;
-                    }
-                    if(img != null)
-                        g.drawImage(img, (x * 20) + (int)this.x + mx, (y * 20) + (int)this.y + my, null);
+                    if(t == null)
+                        img = tile_null;
+                    else
+                        img = t.image;
+                    g.drawImage(img, (x * 20) + (int)(this.x) + mx, (y * 20) + (int)(this.y) + my, null);
                 }
             }
         }
@@ -397,8 +469,6 @@ public class Game extends JPanel {
 
     // draw whatever is in the image variable
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
         /**
          * Sorry, I know this is confusing.
          * I really didn't document this well.
@@ -416,6 +486,14 @@ public class Game extends JPanel {
     public char getTile(int x, int y) {
         Character val = this.map[x][y];
         return (val != null ? val : '?');
+    }
+
+    // returns the Tile object for a char
+    public Tile getTile(char c) {
+        for(Tile tile : this.tiles)
+            if(tile.character == c)
+                return tile;
+        return null;
     }
 
     // sets a tile at an x and y to a value
