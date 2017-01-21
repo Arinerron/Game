@@ -256,11 +256,9 @@ public class Game extends JPanel {
                     this.spawnx = i;
                     this.spawny = x;
                 }
-                System.out.print(c);
 
                 map[x][i] = c;
             }
-            System.out.println();
         }
 
         this.map = map;
