@@ -43,8 +43,10 @@ public class Game extends JPanel {
     public Character[][] map = new Character[100][50];
     public double x = 0;
     public double y = 0;
-    public double speed = 0.0;
-    public double acceleration = 0.015;
+    public double speed = 0.5;
+    public double acceleration = 0.0125;
+    public double xacceleration = 0;
+    public double yacceleration = 0;
     public boolean visible = true;
 
     // initialization
@@ -94,17 +96,17 @@ public class Game extends JPanel {
 
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_W) {
-                    speed = 0;
                     w = false;
+                    yacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_S) {
-                    speed = 0;
                     s = false;
+                    yacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_D) {
-                    speed = 0;
                     d = false;
+                    xacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_A) {
-                    speed = 0;
                     a = false;
+                    xacceleration = 0;
                 }
             }
 
@@ -140,26 +142,31 @@ public class Game extends JPanel {
                     tick();
                     updateImage();
 
-                        System.out.println(speed);
-
                     if(w || s || a || d) {
-                        if(speed < 0.5)
-                            speed += acceleration;
-                        else if(speed > 0.5)
-                            speed = 0.5;
-
                         if(w) {
-                            y = y + speed;
+                            yacceleration += acceleration;
                         }
                         if(s) {
-                            y = y - speed;
+                            yacceleration -= acceleration;
                         }
                         if(a) {
-                            x = x + speed;
+                            xacceleration += acceleration;
                         }
                         if(d) {
-                            x = x - speed;
+                            xacceleration -= acceleration;
                         }
+
+                        if(xacceleration > speed)
+                            xacceleration = speed;
+                        else if(xacceleration < -speed)
+                            xacceleration = -speed;
+                        if(yacceleration > speed)
+                            yacceleration = speed;
+                        else if(yacceleration < -speed)
+                            yacceleration = -speed;
+
+                        x += xacceleration;
+                        y += yacceleration;
                     }
 
                     /*if(getTile((int)(x / 20), (int)(y / 20)) == '.')
