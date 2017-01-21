@@ -10,3 +10,12 @@ git clone https://github.com/Arinerron/Game.git
 ```
 sh run.sh
 ```
+
+# Controls
+- `W` - Move up
+- `A` - Move left
+- `S` - Move down
+- `D` - Move right
+- `<SPACE>` - Jump
+- `<RIGHT_CLICK>` - Pan and speed walk
+- `<SHIFT>` - Slow walk
