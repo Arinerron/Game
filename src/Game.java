@@ -48,6 +48,8 @@ public class Game extends JPanel {
 
     public int mousex = 0;
     public int mousey = 0;
+    public int firstmousex = 0;
+    public int firstmousey = 0;
     public double mousedx = 0;
     public double mousedy = 0;
 
@@ -163,6 +165,12 @@ public class Game extends JPanel {
                     clicked = true;
                 else if(SwingUtilities.isRightMouseButton(e)) {
                     rightclicked = true;
+                    mousex = e.getX();
+                    mousey = e.getY();
+                    firstmousex = e.getX();
+                    firstmousey = e.getY();
+                    mousedx = firstmousex - mousex;
+                    mousedy = firstmousey - mousey;
                     speed = 0.5;
                 }
             }
@@ -184,7 +192,10 @@ public class Game extends JPanel {
         });
 
         this.addMouseMotionListener(new MouseMotionListener() {
-            public void mouseMoved(MouseEvent e) {}
+            public void mouseMoved(MouseEvent e) {
+                mousex = e.getX();
+                mousey = e.getY();
+            }
 
             public void mouseDragged(MouseEvent e) {
                 if(rightclicked) {
@@ -192,8 +203,8 @@ public class Game extends JPanel {
                     mousey = e.getY();
 
                     if(slideover) {
-                        mousedx = -mousex + (real_width / 2);
-                        mousedy = -mousey + (real_height / 2);
+                        mousedx = -mousex + firstmousex;
+                        mousedy = -mousey + firstmousey;
                     }
                 }
             }
