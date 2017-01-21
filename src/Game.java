@@ -116,11 +116,13 @@ public class Game extends JPanel {
                     character_current = character_down;
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = true;
+                } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    speed = 0.1;
                 }
             }
 
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_W) {
+                if(e.getKeyCode() == KeyEvent.VK_W) { // todo make switch/case
                     w = false;
                     yacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_S) {
@@ -134,6 +136,8 @@ public class Game extends JPanel {
                     xacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = false;
+                } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    speed = 0.4;
                 }
             }
 
