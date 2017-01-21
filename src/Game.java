@@ -327,7 +327,7 @@ public class Game extends JPanel {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
 
-        int mx = (int)(this.mousedx / 3) / 3; // I don't know why it need two /4's. TODO: debug.
+        int mx = (int)(this.mousedx / 3) / 3; // I don't know why it need two /3's. TODO: debug.
         int my = (int)(this.mousedy / 3) / 3;
 
         for(int x = 0; x < map.length; x++) {
