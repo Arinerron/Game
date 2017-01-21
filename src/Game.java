@@ -12,7 +12,7 @@ public class Game extends JPanel {
     public JFrame frame = null;
 
     public boolean slideover = true;
-    public int rate = 5; // tick is every 100 milis
+    public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
 
     public int width = 20 * 16;
@@ -30,7 +30,9 @@ public class Game extends JPanel {
     public BufferedImage tile_null = null;
     public BufferedImage tile_dirt = null;
     public BufferedImage tile_water = null;
+    public int character_id = 1;
     public BufferedImage character_current = null;
+    public BufferedImage character_spritesheet = null;
     public BufferedImage character_left = null;
     public BufferedImage character_right = null;
     public BufferedImage character_up = null;
@@ -38,6 +40,7 @@ public class Game extends JPanel {
 
     public boolean clicked = false;
     public boolean rightclicked = false;
+    public boolean space = false;
     public boolean w = false;
     public boolean s = false;
     public boolean d = false;
@@ -51,11 +54,16 @@ public class Game extends JPanel {
     public Character[][] map = new Character[100][50];
     public double x = 0;
     public double y = 0;
+    public int jumptick = 0;
+    public double jumpboost = 0;
+    public boolean jumping = false;
+    public boolean jumpingup = false;
     public double spawnx = 0;
     public double spawny = 0;
     public boolean visible = true;
 
-    public double speed = 0.5;
+    public double jumpheight = 20;
+    public double speed = 0.4;
     public double acceleration = 0.0125;
     public double xacceleration = 0;
     public double yacceleration = 0;
@@ -66,10 +74,8 @@ public class Game extends JPanel {
             this.tile_null = getImage("tile_null");
             this.tile_dirt = getImage("tile_dirt");
             this.tile_water = getImage("tile_water");
-            this.character_left = getImage("character_left");
-            this.character_right = getImage("character_right");
-            this.character_up = getImage("character_up");
-            this.character_down = getImage("character_down");
+
+            this.character_spritesheet = getImage("character_spritesheet");
             this.character_current = this.character_down; // the default stance
 
             loadMap("map.txt");
@@ -108,6 +114,8 @@ public class Game extends JPanel {
                     x = spawnx;
                     y = spawny;
                     character_current = character_down;
+                } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    space = true;
                 }
             }
 
@@ -124,6 +132,8 @@ public class Game extends JPanel {
                 } else if(e.getKeyCode() == KeyEvent.VK_A) {
                     a = false;
                     xacceleration = 0;
+                } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    space = false;
                 }
             }
 
@@ -147,8 +157,10 @@ public class Game extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if(SwingUtilities.isLeftMouseButton(e))
                     clicked = true;
-                else if(SwingUtilities.isRightMouseButton(e))
+                else if(SwingUtilities.isRightMouseButton(e)) {
                     rightclicked = true;
+                    speed = 0.5;
+                }
             }
 
             public void mouseReleased(MouseEvent e) {
@@ -156,6 +168,7 @@ public class Game extends JPanel {
                     clicked = false;
                 else if(SwingUtilities.isRightMouseButton(e)) {
                     rightclicked = false;
+                    speed = 0.4;
                     mousedx = 0;
                     mousedy = 0;
                 }
@@ -197,6 +210,31 @@ public class Game extends JPanel {
                 if(running) {
                     tick();
                     updateImage();
+
+                    if(space && !jumping) {
+                        jumping = true;
+                        jumpingup = true;
+                        jumpboost = 0;
+                        jumptick = tick;
+                    }
+
+                    if(jumping) {
+                        double jspeed = 0.3;
+
+                        if(jumpingup) {
+                            if(jumpboost > -jumpheight)
+                                jumpboost -= jspeed;
+                            else
+                                jumpingup = false;
+                        } else {
+                            if(jumpboost < -0.1)
+                                jumpboost += jspeed;
+                            else {
+                                jumping = false;
+                                jumpboost = 0;
+                            }
+                        }
+                    }
 
                     if(w || s || a || d) {
                         if(w) {
@@ -299,7 +337,17 @@ public class Game extends JPanel {
             }
         }
 
-        g.drawImage(this.character_current, (width / 2) - 10 + mx, (height / 2) - 10 + my, null);
+        if(this.visible) {
+            boolean yeah = w || a || s || d;
+            if(yeah)
+                this.character_id = this.charId(s, d, w, a);
+
+            BufferedImage img = this.getCharacter(character_id, tick, !jumping && yeah);
+            int sizeadjustment = (int)(jumpboost / jumpheight * 1); // change the 1 to change the size when jumping
+            g.drawImage(img, (width / 2) + (sizeadjustment / 2) - 10 + mx,
+                (height / 2) + (sizeadjustment / 2) - 10 + my + (int)jumpboost,
+                img.getWidth() - sizeadjustment, img.getHeight() - sizeadjustment, null);
+        }
 
         g.dispose();
         this.setImage(image);
@@ -358,6 +406,23 @@ public class Game extends JPanel {
     // sets a tile at an x and y to a value
     public void setTile(int x, int y, char value) {
         this.map[x][y] = value;
+    }
+
+    // gets a BufferedImage of the character from a spritesheet
+    public BufferedImage getCharacter(int direction, int tick, boolean walking) {
+        int i = (int)(tick / ((rate / speed) * 1.6)) % 4;
+        return character_spritesheet.getSubimage(walking ? (i == 0 || i == 2 ? 0 : (i == 1 ? 1 : 2)) * 16 : 0, direction * 20, 16, 20);
+    }
+
+    // gets a BufferedImage of the character by booleans
+    public int charId(boolean down, boolean right, boolean up, boolean left) {
+        if(right != left) {
+            return right ? 1 : 3;
+        } else if(up != down) {
+            return up ? 2 : 0;
+        } else {
+            return 0;
+        }
     }
 
     // loads a bufferedimage in by filename
