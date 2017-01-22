@@ -9,5 +9,5 @@ mkdir bin
 cd src
 javac -d ../bin/ Main.java
 cd ../bin
-java Main
+java Main $@
 cd ..

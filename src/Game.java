@@ -73,6 +73,19 @@ public class Game extends JPanel {
     public double xacceleration = 0;
     public double yacceleration = 0;
 
+    // initialization with arguments
+    public Game(String[] args) {
+        this();
+        for(String arg : args) {
+            String[] split = arg.split(Pattern.quote("=")); // TODO: just split on the first =
+            switch(split[0].toLowerCase()) { // TODO: Error handling
+                case "jump":
+                    this.jumpingenabled = Boolean.parseBoolean(split[1]);
+                    break;
+            }
+        }
+    }
+
     // initialization
     public Game() {
         try {
@@ -249,7 +262,7 @@ public class Game extends JPanel {
                     updateImage();
 
                     if(jumpingenabled) {
-                        if(space && !jumping) {
+                        if(space && !jumping && (tile == null || tile.jump)) {
                             jumping = true;
                             jumpingup = true;
                             jumpboost = 0;
@@ -361,13 +374,12 @@ public class Game extends JPanel {
                 Tile t = getTile(c);
                 if(t != null) {
                     if(t.spawn) { // still debugging spawn
-                        System.out.println(this.x + " = " + (-(int)(x) - width) + "; // x=" + x + " && width=" + width);
                         this.x = -(int)(x) - width;
                         this.y = -(int)(i) - height;
                         this.spawnx = -(int)x - width;
                         this.spawny = -(int)i - height;
 
-                        System.out.println("Spawn set to " + this.x + "," + this.y + ". Notice " + x + "," + this.x + "," + spawnx);
+                        System.out.println("Spawn set to " + this.x + "," + this.y);
                     }
 
                     if(t.replace != null)
@@ -428,6 +440,12 @@ public class Game extends JPanel {
                                 case "spawn":
                                     tile.spawn = true;
                                     break;
+                                case "nojump":
+                                    tile.jump = false;
+                                    break;
+                                case "jump":
+                                    tile.jump = true;
+                                    break;
                                 default:
                                     System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
                                     break;
@@ -461,17 +479,15 @@ public class Game extends JPanel {
         int my = (int)(this.mousedy / 3) / 3;
 
         for(int x = 0; x < map.length; x++) {
-            for(int y = 0; y < map[x].length; y++) {
-                if(willRender(x, y)) {
-                    char val = getTile(x, y);
-                    Tile t = getTile(val);
-                    BufferedImage img = null;
-                    if(t == null)
-                        img = tile_null;
-                    else
-                        img = t.image;
-                    g.drawImage(img, (x * 20) + (int)(this.x) + mx, (y * 20) + (int)(this.y) + my, null);
-                }
+            for(int y = 0; y < map[x].length; y++) { // TODO: Optimize
+                char val = getTile(x, y);
+                Tile t = getTile(val);
+                BufferedImage img = null;
+                if(t == null)
+                    img = tile_null;
+                else
+                    img = t.image;
+                g.drawImage(img, (x * 20) + (int)(this.x) + mx, (y * 20) + (int)(this.y) + my, null);
             }
         }
 
@@ -489,12 +505,6 @@ public class Game extends JPanel {
 
         g.dispose();
         this.setImage(image);
-    }
-
-    public boolean willRender(int x, int y) {
-        //if(this.x + this.width < x || this.y + this.height < y || this.x > x + 20 || this.y > y + 20)
-        //    return false;
-        return true;
     }
 
     // Generate image and generate position vars

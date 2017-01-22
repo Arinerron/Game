@@ -8,4 +8,5 @@ public class Tile {
     public boolean spawn = false;
     public Character replace = null;
     public double speed = 0.4;
+    public boolean jump = true;
 }

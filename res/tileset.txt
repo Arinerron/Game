@@ -17,6 +17,8 @@
 # - dangerous - Kills the character on touch
 # - safe - Doesn't kill the character on touch
 # - spawn - Spawn tile-- character spawns here
+# - nojump - Disable jumping on tile
+# - jump - Enable jumping on tile
 # - replace=<char> - Replaces tile with char
 # - speed=<double> - Sets the speed while on tile
 
@@ -24,4 +26,4 @@
 ? tiles/null safe solid
 S null safe fluid spawn replace=tiles/dirt
 D tiles/dirt safe fluid
-. tiles/water safe fluid speed=0.2
+. tiles/water safe fluid speed=0.2 nojump
