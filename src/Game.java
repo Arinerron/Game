@@ -65,6 +65,7 @@ public class Game extends JPanel {
     public double spawnx = 0;
     public double spawny = 0;
     public Tile tile = null; // current tile
+    public char defaultchar = '?';
     public boolean visible = true;
 
     public double jumpheight = 20;
@@ -315,9 +316,19 @@ public class Game extends JPanel {
                     }
 
                     calculateSpeed();
+
+                    if(tile.dangerous) {
+                        kill();
+                    }
                 }
             }
         }, rate, rate);
+    }
+
+    // kills the player
+    public void kill() {
+        this.x = this.spawnx;
+        this.y = this.spawny;
     }
 
     // calculate what speed to travel at
@@ -371,9 +382,11 @@ public class Game extends JPanel {
 
             for(int x = 0; x < array.length; x++) {
                 char c = array[x];
+                if(c == ' ')
+                    c = defaultchar;
                 Tile t = getTile(c);
                 if(t != null) {
-                    if(t.spawn) { // still debugging spawn
+                    if(t.spawn) { // still debugging spawn :(
                         this.x = -(int)(x) - width;
                         this.y = -(int)(i) - height;
                         this.spawnx = -(int)x - width;
@@ -446,6 +459,11 @@ public class Game extends JPanel {
                                 case "jump":
                                     tile.jump = true;
                                     break;
+                                case "default":
+                                    tile.defaultchar = true;
+                                    defaultchar = tile.character;
+                                    tile_null = tile.image;
+                                    break;
                                 default:
                                     System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
                                     break;
@@ -484,7 +502,7 @@ public class Game extends JPanel {
                 Tile t = getTile(val);
                 BufferedImage img = null;
                 if(t == null)
-                    img = tile_null;
+                    img = getTile(defaultchar).image; // tile_null doesn't seem to be working
                 else
                     img = t.image;
                 g.drawImage(img, (x * 20) + (int)(this.x) + mx, (y * 20) + (int)(this.y) + my, null);
@@ -549,10 +567,10 @@ public class Game extends JPanel {
     public char getTile(int x, int y) {
         if(!(x < 0 || y < 0 || x > this.map.length - 1 || y > this.map[0].length - 1)) {
             Character val = this.map[x][y];
-            return (val != null ? val : '?');
+            return (val != null ? val : defaultchar);
         }
 
-        return '?';
+        return defaultchar;
     }
 
     // returns the Tile object for a char

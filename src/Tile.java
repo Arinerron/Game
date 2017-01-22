@@ -9,4 +9,5 @@ public class Tile {
     public Character replace = null;
     public double speed = 0.4;
     public boolean jump = true;
+    public boolean defaultchar = false;
 }

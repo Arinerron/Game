@@ -19,11 +19,13 @@
 # - spawn - Spawn tile-- character spawns here
 # - nojump - Disable jumping on tile
 # - jump - Enable jumping on tile
+# - default - Replace spaces by default with tile
 # - replace=<char> - Replaces tile with char
 # - speed=<double> - Sets the speed while on tile
 
 # Default tiles
-? tiles/null safe solid
-S null safe fluid spawn replace=tiles/dirt
-D tiles/dirt safe fluid
-. tiles/water safe fluid speed=0.2 nojump
+? tiles/null solid nojump
+S null spawn replace=tiles/dirt
+D tiles/dirt
+. tiles/water speed=0.2 nojump
+L tiles/lava dangerous fluid nojump default
