@@ -283,7 +283,7 @@ public class Game extends JPanel {
                         x += xacceleration;
                         y += yacceleration;
                     }
-
+System.out.println(Game.this.x + " and " + Game.this.y);
                     /*if(getTile((int)(x / 20), (int)(y / 20)) == '.')
                         speed = 0.05;
                     else
@@ -317,11 +317,12 @@ public class Game extends JPanel {
                 char c = array[x];
                 Tile t = getTile(c);
                 if(t != null) {
-                    if(t.spawn) {
-                        this.x = (double)(x);
-                        this.y = (double)(i);
-                        this.spawnx = (double)x;
-                        this.spawny = (double)i;
+                    if(t.spawn) { // still debugging spawn
+                        System.out.println(this.x + " = " + (-(int)(x) - width) + "; // x=" + x + " && width=" + width);
+                        this.x = -(int)(x) - width;
+                        this.y = -(int)(i) - height;
+                        this.spawnx = -(int)x - width;
+                        this.spawny = -(int)i - height;
 
                         System.out.println("Spawn set to " + this.x + "," + this.y + ". Notice " + x + "," + this.x + "," + spawnx);
                     }
@@ -469,6 +470,8 @@ public class Game extends JPanel {
 
     // draw whatever is in the image variable
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
         /**
          * Sorry, I know this is confusing.
          * I really didn't document this well.
