@@ -18,9 +18,10 @@
 # - safe - Doesn't kill the character on touch
 # - spawn - Spawn tile-- character spawns here
 # - replace=<char> - Replaces tile with char
+# - speed=<double> - Sets the speed while on tile
 
 # Default tiles
 ? tiles/null safe solid
 S null safe fluid spawn replace=tiles/dirt
 D tiles/dirt safe fluid
-. tiles/water safe fluid
+. tiles/water safe fluid speed=0.2

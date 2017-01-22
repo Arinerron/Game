@@ -41,6 +41,7 @@ public class Game extends JPanel {
     public boolean clicked = false;
     public boolean rightclicked = false;
     public boolean space = false;
+    public boolean shift = false;
     public boolean w = false;
     public boolean s = false;
     public boolean d = false;
@@ -120,7 +121,7 @@ public class Game extends JPanel {
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = true;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    speed = 0.1;
+                    shift = true;
                 }
             }
 
@@ -140,8 +141,8 @@ public class Game extends JPanel {
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = false;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    speed = 0.4;
-                }  else if(e.getKeyCode() == KeyEvent.VK_B) {
+                    shift = false;
+                } else if(e.getKeyCode() == KeyEvent.VK_B) {
                     eightbit = !eightbit;
                 } else {
                     try {
@@ -182,7 +183,6 @@ public class Game extends JPanel {
                     firstmousey = e.getY();
                     mousedx = firstmousex - mousex;
                     mousedy = firstmousey - mousey;
-                    speed = 0.5;
                 }
             }
 
@@ -191,7 +191,6 @@ public class Game extends JPanel {
                     clicked = false;
                 else if(SwingUtilities.isRightMouseButton(e)) {
                     rightclicked = false;
-                    speed = 0.4;
                     mousedx = 0;
                     mousedy = 0;
                 }
@@ -219,6 +218,16 @@ public class Game extends JPanel {
                     }
                 }
             }
+        });
+
+        this.frame.addComponentListener(new ComponentListener() {
+            public void componentResized(ComponentEvent e) {
+                recalculate();
+            }
+
+            public void componentHidden(ComponentEvent e) {}
+            public void componentShown(ComponentEvent e) {}
+            public void componentMoved(ComponentEvent e) {}
         });
 
         this.frame.addFocusListener(focus);
@@ -288,14 +297,39 @@ public class Game extends JPanel {
                         x += xacceleration;
                         y += yacceleration;
                     }
-                    System.out.println("x=" + (int)x + " y=" + (int)y + " 20x=" + (int)((x/20) - (width / 40)) + " 20y=" + (int)((y/20) - (height / 40)));
-                    /*if(getTile((int)(x / 20), (int)(y / 20)) == '.')
-                        speed = 0.05;
-                    else
-                        speed = 0.1;*/
+
+                    calculateSpeed();
                 }
             }
         }, rate, rate);
+    }
+
+    // calculate what speed to travel at
+    public void calculateSpeed() {
+        Tile tile = getCurrentTile();
+        if(tile != null)
+            speed = Math.abs(tile.speed);
+        else
+            speed = 0.3;
+        if(rightclicked)
+            speed += 0.1;
+        else if(shift)
+            speed = speed / 2;
+    }
+
+    // returns the tile object the player is on
+    public Tile getCurrentTile() {
+        return getTile(getTile(getTileX(x), getTileY(y)));
+    }
+
+    // gets the X position of a tile from a raw X position
+    public int getTileX(double x) {
+        return -(int)((x/20) - (width / 40));
+    }
+
+    // gets the Y position of a tile from a raw Y position
+    public int getTileY(double y) {
+        return -(int)(((y-10)/20) - (height / 40));
     }
 
     // generates the variables for frame size
@@ -383,6 +417,9 @@ public class Game extends JPanel {
                                     break;
                                 case "replace":
                                     tile.replace = pair[1].charAt(0);
+                                    break;
+                                case "speed":
+                                    tile.speed = Double.parseDouble(pair[1]);
                                     break;
                                 case "spawn":
                                     tile.spawn = true;
@@ -496,8 +533,12 @@ public class Game extends JPanel {
 
     // returns the value of a tile at x and y
     public char getTile(int x, int y) {
-        Character val = this.map[x][y];
-        return (val != null ? val : '?');
+        if(!(x < 0 || y < 0)) {
+            Character val = this.map[x][y];
+            return (val != null ? val : '?');
+        }
+
+        return '?';
     }
 
     // returns the Tile object for a char

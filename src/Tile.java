@@ -7,4 +7,5 @@ public class Tile {
     public boolean dangerous = false;
     public boolean spawn = false;
     public Character replace = null;
+    public double speed = 0.4;
 }
