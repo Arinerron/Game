@@ -17,6 +17,7 @@ sh run.sh
 - `S` - Move down
 - `D` - Move right
 - `R` - Respawn
+- `B` - Toggle 8-bit rendering mode
 - `<SPACE>` - Jump (disabled right now)
 - `<RIGHT_CLICK>` - Pan and speed walk
 - `<SHIFT>` - Slow walk

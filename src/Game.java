@@ -12,6 +12,7 @@ public class Game extends JPanel {
     public JFrame frame = null;
 
     public boolean slideover = true;
+    public boolean eightbit = false;
     public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
 
@@ -113,6 +114,8 @@ public class Game extends JPanel {
                 else if(e.getKeyCode() == KeyEvent.VK_R) {
                     x = spawnx;
                     y = spawny;
+                    xacceleration = 0;
+                    yacceleration = 0;
                     character_current = character_down;
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = true;
@@ -138,6 +141,8 @@ public class Game extends JPanel {
                     space = false;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     speed = 0.4;
+                }  else if(e.getKeyCode() == KeyEvent.VK_B) {
+                    eightbit = !eightbit;
                 } else {
                     try {
                         int i = Integer.parseInt("" + e.getKeyChar());
@@ -283,7 +288,7 @@ public class Game extends JPanel {
                         x += xacceleration;
                         y += yacceleration;
                     }
-System.out.println(Game.this.x + " and " + Game.this.y);
+                    System.out.println("x=" + (int)x + " y=" + (int)y + " 20x=" + (int)((x/20) - (width / 40)) + " 20y=" + (int)((y/20) - (height / 40)));
                     /*if(getTile((int)(x / 20), (int)(y / 20)) == '.')
                         speed = 0.05;
                     else
@@ -404,7 +409,11 @@ System.out.println(Game.this.x + " and " + Game.this.y);
 
     // update the image variable so it knows what to draw
     public void updateImage() {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = null;
+        if(eightbit)
+            image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
+        else
+            image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
 
         int mx = (int)(this.mousedx / 3) / 3; // I don't know why it need two /3's. TODO: debug.
