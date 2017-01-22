@@ -57,15 +57,17 @@ public class Game extends JPanel {
     public Character[][] map = new Character[100][50];
     public double x = 0;
     public double y = 0;
+    public boolean jumpingenabled = false; //enable or disable jumping
     public int jumptick = 0;
     public double jumpboost = 0;
     public boolean jumping = false;
     public boolean jumpingup = false;
     public double spawnx = 0;
     public double spawny = 0;
+    public Tile tile = null; // current tile
     public boolean visible = true;
 
-    public double jumpheight = 0; // change to 20 to enable jumping, and 0 to disable.
+    public double jumpheight = 20;
     public double speed = 0.4;
     public double acceleration = 0.0125;
     public double xacceleration = 0;
@@ -246,31 +248,32 @@ public class Game extends JPanel {
                     tick();
                     updateImage();
 
-                    if(space && !jumping) {
-                        jumping = true;
-                        jumpingup = true;
-                        jumpboost = 0;
-                        jumptick = tick;
-                    }
+                    if(jumpingenabled) {
+                        if(space && !jumping) {
+                            jumping = true;
+                            jumpingup = true;
+                            jumpboost = 0;
+                            jumptick = tick;
+                        }
 
-                    if(jumping) {
-                        double jspeed = 0.3;
+                        if(jumping) {
+                            double jspeed = 0.3;
 
-                        if(jumpingup) {
-                            if(jumpboost > -jumpheight)
-                                jumpboost -= jspeed;
-                            else
-                                jumpingup = false;
-                        } else {
-                            if(jumpboost < -0.1)
-                                jumpboost += jspeed;
-                            else {
-                                jumping = false;
-                                jumpboost = 0;
+                            if(jumpingup) {
+                                if(jumpboost > -jumpheight)
+                                    jumpboost -= jspeed;
+                                else
+                                    jumpingup = false;
+                            } else {
+                                if(jumpboost < -0.1)
+                                    jumpboost += jspeed;
+                                else {
+                                    jumping = false;
+                                    jumpboost = 0;
+                                }
                             }
                         }
                     }
-
                     if(w || s || a || d) {
                         if(w) {
                             yacceleration += acceleration;
@@ -319,7 +322,8 @@ public class Game extends JPanel {
 
     // returns the tile object the player is on
     public Tile getCurrentTile() {
-        return getTile(getTile(getTileX(x), getTileY(y)));
+        this.tile = getTile(getTile(getTileX(x), getTileY(y)));
+        return this.tile;
     }
 
     // gets the X position of a tile from a raw X position
@@ -533,7 +537,7 @@ public class Game extends JPanel {
 
     // returns the value of a tile at x and y
     public char getTile(int x, int y) {
-        if(!(x < 0 || y < 0)) {
+        if(!(x < 0 || y < 0 || x > this.map.length - 1 || y > this.map[0].length - 1)) {
             Character val = this.map[x][y];
             return (val != null ? val : '?');
         }
