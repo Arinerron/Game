@@ -73,6 +73,7 @@ public class Game extends JPanel {
     public double acceleration = 0.0125;
     public double xacceleration = 0;
     public double yacceleration = 0;
+    public Color background = Color.BLACK;
 
     // initialization with arguments
     public Game(String[] args) {
@@ -103,10 +104,10 @@ public class Game extends JPanel {
         }
 
         this.frame = new JFrame("Game");
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         this.frame.setBackground(Color.BLACK);
         this.setBackground(Color.BLACK);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         this.frame.setExtendedState(this.frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         this.frame.setResizable(true);
         this.frame.getContentPane().add(this);
@@ -369,7 +370,30 @@ public class Game extends JPanel {
 
     // loads a map into memory
     public void loadMap(String name) throws Exception {
-        String[] lines = getString(name).split(Pattern.quote("\n"));
+        String file = getString(name);
+
+        boolean config = file.startsWith("CONFIG:");
+        if(config) {
+            String[] cfg = file.substring(0, file.indexOf("\n\n")).split(Pattern.quote("\n"));
+            for(String line : cfg) {
+                if(!line.startsWith("CONFIG:")) {
+                    String[] pair = line.split(Pattern.quote("="));
+                    String key = pair[0];
+                    String val = pair[1];
+
+                    switch(key.toLowerCase()) {
+                        case "background":
+                            this.background = (Color) Color.class.getField(val.toLowerCase()).get(null);
+                            break;
+                        default:
+                            System.out.println("Unknown config option \"" + key + "\" for map file \"" + name + "\".");
+                            break;
+                    }
+                }
+            }
+        }
+
+        String[] lines = (config ? file.substring(file.indexOf("\n\n")) : file).split(Pattern.quote("\n"));
         int width = 0;
         int height = lines.length;
         for(String line : lines)
@@ -492,6 +516,11 @@ public class Game extends JPanel {
         else
             image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
+
+        if(this.background != Color.BLACK && this.background != null) {
+            g.setColor(this.background);
+            g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        }
 
         int mx = (int)(this.mousedx / 3) / 3; // I don't know why it need two /3's. TODO: debug.
         int my = (int)(this.mousedy / 3) / 3;
