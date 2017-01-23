@@ -28,4 +28,4 @@
 S null spawn replace=tiles/dirt
 D tiles/dirt
 . tiles/water speed=0.2 nojump
-L tiles/lava dangerous fluid nojump default
+L tiles/lava fluid nojump default

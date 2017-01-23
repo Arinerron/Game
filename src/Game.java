@@ -40,6 +40,7 @@ public class Game extends JPanel {
 
     public boolean clicked = false;
     public boolean rightclicked = false;
+    public boolean middleclicked = false;
     public boolean space = false;
     public boolean shift = false;
     public boolean w = false;
@@ -83,6 +84,9 @@ public class Game extends JPanel {
             switch(split[0].toLowerCase()) { // TODO: Error handling
                 case "jump":
                     this.jumpingenabled = Boolean.parseBoolean(split[1]);
+                    break;
+                default:
+                    System.out.println("Unknown parameter \"" + split[0] + "\" for game arguments.");
                     break;
             }
         }
@@ -200,6 +204,10 @@ public class Game extends JPanel {
                     firstmousey = e.getY();
                     mousedx = firstmousex - mousex;
                     mousedy = firstmousey - mousey;
+                } else if(SwingUtilities.isMiddleMouseButton(e)) {
+                    middleclicked = true;
+                    mousex = e.getX();
+                    mousey = e.getY();
                 }
             }
 
@@ -210,6 +218,8 @@ public class Game extends JPanel {
                     rightclicked = false;
                     mousedx = 0;
                     mousedy = 0;
+                } else if(SwingUtilities.isMiddleMouseButton(e)) {
+                    middleclicked = false;
                 }
             }
 
@@ -225,11 +235,11 @@ public class Game extends JPanel {
             }
 
             public void mouseDragged(MouseEvent e) {
-                if(rightclicked) {
+                if(rightclicked || clicked || middleclicked) {
                     mousex = e.getX();
                     mousey = e.getY();
 
-                    if(slideover) {
+                    if(slideover && rightclicked) {
                         mousedx = -mousex + firstmousex;
                         mousedy = -mousey + firstmousey;
                     }
@@ -289,7 +299,9 @@ public class Game extends JPanel {
                             }
                         }
                     }
-                    if(w || s || a || d) {
+
+
+                    if(w || s || a || d || middleclicked) {
                         if(w) {
                             yacceleration += acceleration;
                         }
@@ -302,6 +314,45 @@ public class Game extends JPanel {
                         if(d) {
                             xacceleration -= acceleration;
                         }
+                        if(middleclicked)
+                            if(mousex != 0 && mousey != 0) {
+                                double mousex2 = (real_width / 2) - mousex;
+                                double mousey2 = (real_height / 2) - mousey;
+
+                                if(mousex2 > 0)
+                                    xacceleration = 0.4;
+                                else if(mousex2 < 0)
+                                    xacceleration = -0.4;
+                                else
+                                    xacceleration = 0;
+
+                                if(mousey2 > 0)
+                                    yacceleration = 0.4;
+                                else if(mousey2 < 0)
+                                    yacceleration = -0.4;
+                                else
+                                    yacceleration = 0;
+                                /*double length = (double)Math.sqrt((mousex2 - (real_width / 2))*(mousex2 - (real_width / 2)) + (mousey2 - (real_height / 2))*(mousey2 - (real_height / 2))); //calculates the distance between the two points
+
+                                xacceleration += (mousex2 - (real_width / 2)) /length * 0.1;
+
+                                yacceleration += (mousey2 - (real_height / 2)) /length * 0.1;*/
+
+
+                                /*double mousex2 = (real_width / 2) - mousex;
+                                double mousey2 = (real_height / 2) - mousey;
+                                double ratiox = (real_width / 2) / mousex2; // rise/run
+                                double ratioy = (real_height / 2) / mousey2; // rise/run
+
+                                xacceleration += ratiox / 100000;
+                                yacceleration += ratioy / 100000;*/
+                                /*double ratio = mousey2 / mousex2; // rise/run
+                                double distance = Math.sqrt(Math.pow(mousex2, 2) + Math.pow(mousey2, 2)); // a^2+b^2=c^2
+
+                                System.out.println("ratio:" + ratio + " & distance:" + distance + " & mousex2:" + mousex2);
+                                yacceleration += distance * (ratio / 1000);
+                                xacceleration += (ratio / 1000);*/
+                            }
 
                         if(xacceleration > speed)
                             xacceleration = speed;
