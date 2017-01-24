@@ -29,6 +29,7 @@ The allowed parameters are:
 - `R` - Respawn
 - `B` - Toggle 8-bit rendering mode
 - `<SPACE>` - Jump (disabled right now)
-- `<RIGHT_CLICK>` - Pan and speed walk
+- `<RIGHT_CLICK>` - Hold to pan view and speed walk
+- `<MIDDLE_CLICK>` - Hold to speed walk towards mouse
 - `<SHIFT>` - Slow walk
 - `<NUMBER_KEYS>` - Change aspect ratio (DEBUG ONLY)
