@@ -23,10 +23,10 @@ public class Game extends JPanel {
     public int real_height = 0;
 
     public double togo = 1;
-	public int wid = 1;
-	public int hei = 1;
-	public int add = 1;
-	public int addy = 1;
+    public int wid = 1;
+    public int hei = 1;
+    public int add = 1;
+    public int addy = 1;
 
     public BufferedImage image = null;
     public java.util.List<Tile> tiles = new java.util.ArrayList<>();
@@ -166,23 +166,11 @@ public class Game extends JPanel {
                 } else if(e.getKeyCode() == KeyEvent.VK_A) {
                     a = false;
                     xacceleration = 0;
-                } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                } else if(e.getKeyCode() == KeyEvent.VK_SPACE)
                     space = false;
-                } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
                     shift = false;
-                } else if(e.getKeyCode() == KeyEvent.VK_B) {
-                    eightbit = !eightbit;
-                } else {
-                    try {
-                        int i = Integer.parseInt("" + e.getKeyChar());
-                        width = 2 * 20 * i + 1;
-                        height = 20 * i + 1;
-                        System.out.println("Aspect ratio set to " + width + "x" + height);
-                        recalculate();
-                    } catch(Exception ex) {
-                        // do nothing
-                    }
-                }
+                else if(e.getKeyCode() == KeyEvent.VK_B)
             }
 
             public void keyTyped(KeyEvent e) {}
