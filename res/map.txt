@@ -2,7 +2,7 @@ CONFIG:
 # Number symbols are comments of course.
 # If you use the optional configuration, the "CONFIG:" string MUST be on 1st line
 # Configuration settings:
-# - background.color - The color of the background, as hex or string
+# - background.color - The color of the background, as string
 # - spawn.x - The X coordinate for spawning
 # - spawn.y - The Y coordinate for spawning
 # Note that the coordinates MUST be integers. A tile is 20x20, so if you want to
