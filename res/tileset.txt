@@ -17,6 +17,7 @@
 # - dangerous - Kills the character on touch
 # - safe - Doesn't kill the character on touch
 # - spawn - Spawn tile-- character spawns here
+# - checkpoint - Sets a checkpoint to spawn at on touch
 # - nojump - Disable jumping on tile
 # - jump - Enable jumping on tile
 # - default - Replace spaces by default with tile
@@ -29,3 +30,4 @@ S null spawn replace=tiles/dirt
 D tiles/dirt
 . tiles/water speed=0.2 nojump
 L tiles/lava fluid nojump dangerous default
+C tiles/dirt checkpoint

@@ -6,8 +6,9 @@ public class Tile {
     public boolean solid = false;
     public boolean dangerous = false;
     public boolean spawn = false;
-    public Character replace = null;
+    public char replace = ' ';
     public double speed = 0.4;
     public boolean jump = true;
     public boolean defaultchar = false;
+    public boolean checkpoint = false;
 }

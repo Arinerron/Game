@@ -16,25 +16,22 @@ spawn.y=120
 
 DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
 DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
-    DDDDD             DD                                 DDDDD
-    DDDDD             DD                                 DDDDD
-    DDDDDDDDDDDDDDDDDDDD                                 DDDDD
-    DDDDDDDDDDDDDDDDDDDD                                 DDDDD
-    DDDDDDDDDDDDDDDDDDDD                                 DDDDD
-    DDDDDDDDDDDDDDDDDDDD                                 DDDDD
-    DDDDDDDDDDDDDDDDDDDD                                 DDDDD
-                   DDDDD                                 DDDDD
-                   DDDDD                                 DDDDD
-                   DDDDD                                 DDDDD
-                   DDDDD                                 DDDDD
-                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-                   DDDDD
-                   DDDDD
-                   DDDDD
-                   DDDDD
-                   DDDDD
+    DDDDD             DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+    DDDDD             DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+    DDDDDDDDDCDDDDDDDDDD                                 DDDDD
+    DDDDDDDDDCDDDDDDDDDD                                 DDDDD
+DDDDDDDDDDDDDCDDDDDDDDDDC                                DDDDD
+D                       CCC                              DDDDD
+D            C          DDD                              DDDDD
+D           CCC     DDDD                                 DDDDD
+D      C          DDDD                                   DDDDD
+D                      DDDD                              DDDDD
+D      D            CCCC                                 DDDDD
+DD DDD D  D DDDDDD  DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+D                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+D                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+D                   DDDD
+D                   DDDD
+D                   DDDD
+D                   DDDD
+D                   DDDD

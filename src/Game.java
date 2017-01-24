@@ -108,8 +108,6 @@ public class Game extends JPanel {
 
             loadTileset("tileset.txt");
             loadMap("map.txt");
-
-            System.out.println("Spawn set to " + this.x + "," + this.y);
         } catch(Exception e) {
             System.err.println("Failed to load resources. Exiting...");
             e.printStackTrace();
@@ -370,14 +368,34 @@ public class Game extends JPanel {
 
                         calculateSpeed();
 
-                        if(tile.dangerous && !jumping)
-                            kill();
+                        if(tile != null) {
+                            if(tile.dangerous && !jumping)
+                                kill();
+                            else if(tile.checkpoint) {
+                                setSpawn(Game.this.x, Game.this.y, false);
+                            }
+                        } else
+                            System.out.println("null!");
 
                         threadlocked = false;
                     }
                 }
             }
         }, rate, rate);
+    }
+
+    public void setSpawn(double x, double y, boolean abs) {
+        boolean print = (int)x != (int)this.spawnx && (int)y != (int)this.spawny;
+
+        this.spawnx = x;
+        this.spawny = y;
+        if(abs) {
+            this.x = x;
+            this.y = y;
+        }
+
+        if(print)
+            System.out.println("Spawn set to [" + (int)this.spawnx + "," + (int)this.spawny + "].");
     }
 
     // kills the player
@@ -450,11 +468,10 @@ public class Game extends JPanel {
                             this.background = (Color) Color.class.getField(val.toLowerCase()).get(null);
                             break;
                         case "spawn.x":
-                            this.spawnx = -Integer.parseInt(val);
-                            this.x = this.spawnx;
+                            this.setSpawn(-Integer.parseInt(val), this.spawny, true);
                             break;
                         case "spawn.y":
-                            this.spawny = -Integer.parseInt(val);
+                            this.setSpawn(this.spawnx, -Integer.parseInt(val), true);
                             this.y = this.spawny;
                             break;
                         default:
@@ -483,14 +500,9 @@ public class Game extends JPanel {
                         c = defaultchar;
                     Tile t = getTile(c);
                     if(t != null) {
-                        if(t.spawn) { // still debugging spawn :(
-                            this.x = -(int)x - width;
-                            this.y = -(int)i - height;
-                            this.spawnx = -(int)x - width;
-                            this.spawny = -(int)i - height;
-                        }
-
-                        if(t.replace != null)
+                        if(t.spawn)
+                            this.setSpawn(-(int)x - width, -(int)i - height, true);
+                        if(t.replace != ' ')
                             c = t.replace;
                     }
 
@@ -548,6 +560,9 @@ public class Game extends JPanel {
                                     break;
                                 case "spawn":
                                     tile.spawn = true;
+                                    break;
+                                case "checkpoint":
+                                    tile.checkpoint = true;
                                     break;
                                 case "nojump":
                                     tile.jump = false;
