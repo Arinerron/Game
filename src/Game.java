@@ -87,6 +87,12 @@ public class Game extends JPanel {
                 case "jump":
                     this.jumpingenabled = Boolean.parseBoolean(split[1]);
                     break;
+                case "8bit":
+                    eightbit = Boolean.parseBoolean(split[1]);
+                    break;
+                case "pan":
+                    slideover = Boolean.parseBoolean(split[1]);
+                    break;
                 default:
                     System.out.println("Unknown parameter \"" + split[0] + "\" for game arguments.");
                     break;
@@ -364,7 +370,7 @@ public class Game extends JPanel {
 
                         calculateSpeed();
 
-                        if(tile.dangerous)
+                        if(tile.dangerous && !jumping)
                             kill();
 
                         threadlocked = false;
