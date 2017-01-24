@@ -31,3 +31,4 @@ D tiles/dirt
 . tiles/water speed=0.2 nojump
 L tiles/lava fluid nojump dangerous default
 C tiles/dirt checkpoint
+_ tiles/ice speed=0.4 acceleration=0.0008 nojump slippery

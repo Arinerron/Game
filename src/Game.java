@@ -161,16 +161,20 @@ public class Game extends JPanel {
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_W) { // todo make switch/case
                     w = false;
-                    yacceleration = 0;
+                    if(tile != null && !tile.slippery && !jumping)
+                        yacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_S) {
                     s = false;
-                    yacceleration = 0;
+                    if(tile != null && !tile.slippery && !jumping)
+                        yacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_D) {
                     d = false;
-                    xacceleration = 0;
+                    if(tile != null && !tile.slippery && !jumping)
+                        xacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_A) {
                     a = false;
-                    xacceleration = 0;
+                    if(tile != null && !(tile.slippery && !jumping))
+                        xacceleration = 0;
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE)
                     space = false;
                 else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
@@ -304,7 +308,7 @@ public class Game extends JPanel {
                         }
 
 
-                        if(w || s || a || d || middleclicked) {
+                        if(w || s || a || d || middleclicked || jumping) {
                             moving = true;
                             if(middleclicked) {
                                 if(mousex != 0 && mousey != 0) {
@@ -331,7 +335,8 @@ public class Game extends JPanel {
                                     Game.this.character_id = charId(down, right, up, left);
                                 }
                             } else
-                                Game.this.character_id = charId(s, d, w, a);
+                                if(!jumping)
+                                    Game.this.character_id = charId(s, d, w, a);
 
                             if(w) {
                                 yacceleration += acceleration;
@@ -346,6 +351,11 @@ public class Game extends JPanel {
                                 xacceleration -= acceleration;
                             }
 
+                            if(jumping && !(w || a || s || d)) {
+                                xacceleration = xacceleration * 0.92;
+                                yacceleration = yacceleration * 0.92;
+                            }
+
                             if(xacceleration > speed)
                                 xacceleration = speed;
                             else if(xacceleration < -speed)
@@ -354,19 +364,24 @@ public class Game extends JPanel {
                                 yacceleration = speed;
                             else if(yacceleration < -speed)
                                 yacceleration = -speed;
-
-                            x += xacceleration;
-                            y += yacceleration;
                         } else
                             moving = false;
 
                         calculateSpeed();
 
                         if(tile != null) {
+                            acceleration = tile.acceleration;
+
                             if(tile.dangerous && !jumping)
                                 kill();
                             else if(tile.checkpoint) {
                                 setSpawn(Game.this.x, Game.this.y, false);
+                            } else if(tile.slippery && !jumping) {
+                                x += xacceleration;
+                                y += yacceleration;
+                            } else if(moving) {
+                                x += xacceleration;
+                                y += yacceleration;
                             }
                         } else
                             System.out.println("null!");
@@ -544,6 +559,12 @@ public class Game extends JPanel {
                                 case "dangerous":
                                     tile.dangerous = true;
                                     break;
+                                case "slippery":
+                                    tile.slippery = true;
+                                    break;
+                                case "sticky":
+                                    tile.slippery = false;
+
                                 case "safe":
                                     tile.dangerous = false;
                                     break;
@@ -552,6 +573,9 @@ public class Game extends JPanel {
                                     break;
                                 case "speed":
                                     tile.speed = Double.parseDouble(pair[1]);
+                                    break;
+                                case "acceleration":
+                                    tile.acceleration = Double.parseDouble(pair[1]);
                                     break;
                                 case "spawn":
                                     tile.spawn = true;
