@@ -7,11 +7,12 @@ git clone https://github.com/Arinerron/Game.git
 ```
 
 # Starting Game
+To start the game, simply execute:
 ```
 sh run.sh
 ```
 
-You can optionally add space-separated parameters, like
+Or, you can optionally add space-separated parameters, like:
 ```
 sh run.sh pan=false jump=true 8bit=true
 ```
