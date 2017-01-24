@@ -24,8 +24,8 @@
 # - speed=<double> - Sets the speed while on tile
 
 # Default tiles
-? tiles/null solid nojump
+? tiles/null solid nojump default
 S null spawn replace=tiles/dirt
 D tiles/dirt
 . tiles/water speed=0.2 nojump
-L tiles/lava fluid nojump default
+L tiles/lava fluid nojump dangerous

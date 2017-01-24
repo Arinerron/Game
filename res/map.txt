@@ -1,10 +1,12 @@
 CONFIG:
-background=blue
+background.color=blue
+spawn.x=-40
+spawn.y=-50
 
-    DDDDD                                                DDDDD
-    DDDDD                                                DDDDD
-    DDDDD                                                DDDDD
-    DDDDD                                                DDDDD
+DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
+DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
+    DDDDD             DD                                 DDDDD
+    DDDDD             DD                                 DDDDD
     DDDDDDDDDDDDDDDDDDDD                                 DDDDD
     DDDDDDDDDDDDDDDDDDDD                                 DDDDD
     DDDDDDDDDDDDDDDDDDDD                                 DDDDD

@@ -70,6 +70,7 @@ public class Game extends JPanel {
     public boolean visible = true;
 
     public double jumpheight = 20;
+    public boolean moving = false;
     public double speed = 0.4;
     public double acceleration = 0.0125;
     public double xacceleration = 0;
@@ -239,7 +240,7 @@ public class Game extends JPanel {
                     mousex = e.getX();
                     mousey = e.getY();
 
-                    if(slideover && rightclicked) {
+                    if(slideover && rightclicked && !middleclicked) {
                         mousedx = -mousex + firstmousex;
                         mousedy = -mousey + firstmousey;
                     }
@@ -302,6 +303,34 @@ public class Game extends JPanel {
 
 
                     if(w || s || a || d || middleclicked) {
+                        moving = true;
+                        if(middleclicked) {
+                            if(mousex != 0 && mousey != 0) {
+                                double mousex2 = (real_width / 2) - mousex;
+                                double mousey2 = (real_height / 2) - mousey;
+
+                                xacceleration = mousex2 /(real_width / 2);
+                                yacceleration = mousey2 /(real_height / 2);
+
+                                boolean down = false, right = false, up = false, left = false; // todo improve to only two booleans
+
+                                if(Math.abs(mousex2) > Math.abs(mousey2)) {
+                                    if(mousex2 > 0)
+                                        left = true;
+                                    else
+                                        right = true;
+                                } else {
+                                    if(mousey2 > 0)
+                                        up = true;
+                                    else
+                                        down = true;
+                                }
+
+                                Game.this.character_id = charId(down, right, up, left);
+                            }
+                        } else
+                            Game.this.character_id = charId(s, d, w, a);
+
                         if(w) {
                             yacceleration += acceleration;
                         }
@@ -314,45 +343,6 @@ public class Game extends JPanel {
                         if(d) {
                             xacceleration -= acceleration;
                         }
-                        if(middleclicked)
-                            if(mousex != 0 && mousey != 0) {
-                                double mousex2 = (real_width / 2) - mousex;
-                                double mousey2 = (real_height / 2) - mousey;
-
-                                if(mousex2 > 0)
-                                    xacceleration = 0.4;
-                                else if(mousex2 < 0)
-                                    xacceleration = -0.4;
-                                else
-                                    xacceleration = 0;
-
-                                if(mousey2 > 0)
-                                    yacceleration = 0.4;
-                                else if(mousey2 < 0)
-                                    yacceleration = -0.4;
-                                else
-                                    yacceleration = 0;
-                                /*double length = (double)Math.sqrt((mousex2 - (real_width / 2))*(mousex2 - (real_width / 2)) + (mousey2 - (real_height / 2))*(mousey2 - (real_height / 2))); //calculates the distance between the two points
-
-                                xacceleration += (mousex2 - (real_width / 2)) /length * 0.1;
-
-                                yacceleration += (mousey2 - (real_height / 2)) /length * 0.1;*/
-
-
-                                /*double mousex2 = (real_width / 2) - mousex;
-                                double mousey2 = (real_height / 2) - mousey;
-                                double ratiox = (real_width / 2) / mousex2; // rise/run
-                                double ratioy = (real_height / 2) / mousey2; // rise/run
-
-                                xacceleration += ratiox / 100000;
-                                yacceleration += ratioy / 100000;*/
-                                /*double ratio = mousey2 / mousex2; // rise/run
-                                double distance = Math.sqrt(Math.pow(mousex2, 2) + Math.pow(mousey2, 2)); // a^2+b^2=c^2
-
-                                System.out.println("ratio:" + ratio + " & distance:" + distance + " & mousex2:" + mousex2);
-                                yacceleration += distance * (ratio / 1000);
-                                xacceleration += (ratio / 1000);*/
-                            }
 
                         if(xacceleration > speed)
                             xacceleration = speed;
@@ -365,13 +355,13 @@ public class Game extends JPanel {
 
                         x += xacceleration;
                         y += yacceleration;
-                    }
+                    } else
+                        moving = false;
 
                     calculateSpeed();
 
-                    if(tile.dangerous) {
+                    if(tile.dangerous)
                         kill();
-                    }
                 }
             }
         }, rate, rate);
@@ -390,7 +380,7 @@ public class Game extends JPanel {
             speed = Math.abs(tile.speed);
         else
             speed = 0.3;
-        if(rightclicked)
+        if(rightclicked || middleclicked)
             speed += 0.1;
         else if(shift)
             speed = speed / 2;
@@ -404,12 +394,26 @@ public class Game extends JPanel {
 
     // gets the X position of a tile from a raw X position
     public int getTileX(double x) {
-        return -(int)((x/20) - (width / 40));
+        System.out.println("x=" + (int)x + " & to=" + ((int)(x * (real_width / width)) / 10 / 9) + " & sup=" + (-(int)((x/20) - (width / 40))) + " ");
+        return (int)(x / (real_width / width)); // 1000 / 12
+        //return -(int)((x/20) - (width / 40));
     }
 
     // gets the Y position of a tile from a raw Y position
     public int getTileY(double y) {
-        return -(int)(((y-10)/20) - (height / 40));
+        System.out.println("cur=" + (tile != null ? this.tile.character : "null") + " & y=" + (int)y + " & sup=" + (-(int)(((y-10)/20) - (height / 40))) + " & to=" + ((int)(y * (real_height / height)) / 10 / 9));
+        return (int)(y / (real_height / height));
+        //return -(int)(((y-10)/20) - (height / 40));
+    }
+
+    // gets the X position from a tile x
+    public int getRealX(double x) {
+        return (int)(x * (real_width / width));
+    }
+
+    // gets the Y position from a tile y
+    public int getRealY(double y) {
+        return (int)(y * (real_height / height));
     }
 
     // generates the variables for frame size
@@ -433,8 +437,14 @@ public class Game extends JPanel {
                     String val = pair[1];
 
                     switch(key.toLowerCase()) {
-                        case "background":
+                        case "background.color":
                             this.background = (Color) Color.class.getField(val.toLowerCase()).get(null);
+                            break;
+                        case "spawn.x":
+                            this.spawnx = Integer.parseInt(val);
+                            break;
+                        case "spawn.y":
+                            this.spawny = Integer.parseInt(val);
                             break;
                         default:
                             System.out.println("Unknown config option \"" + key + "\" for map file \"" + name + "\".");
@@ -444,7 +454,7 @@ public class Game extends JPanel {
             }
         }
 
-        String[] lines = (config ? file.substring(file.indexOf("\n\n")) : file).split(Pattern.quote("\n"));
+        String[] lines = (config ? file.split(Pattern.quote("\n\n"))[1] : file).split(Pattern.quote("\n"));
         int width = 0;
         int height = lines.length;
         for(String line : lines)
@@ -453,28 +463,30 @@ public class Game extends JPanel {
 
         Character[][] map = new Character[width][height];
         for(int i = 0; i < lines.length; i++) {
-            char[] array = lines[i].toCharArray();
+            if(lines[i].length() != 0) {
+                char[] array = lines[i].toCharArray();
 
-            for(int x = 0; x < array.length; x++) {
-                char c = array[x];
-                if(c == ' ')
-                    c = defaultchar;
-                Tile t = getTile(c);
-                if(t != null) {
-                    if(t.spawn) { // still debugging spawn :(
-                        this.x = -(int)(x) - width;
-                        this.y = -(int)(i) - height;
-                        this.spawnx = -(int)x - width;
-                        this.spawny = -(int)i - height;
+                for(int x = 0; x < array.length; x++) {
+                    char c = array[x];
+                    if(c == ' ')
+                        c = defaultchar;
+                    Tile t = getTile(c);
+                    if(t != null) {
+                        if(t.spawn) { // still debugging spawn :(
+                            this.x = -(int)(x) - width;
+                            this.y = -(int)(i) - height;
+                            this.spawnx = -(int)x - width;
+                            this.spawny = -(int)i - height;
 
-                        System.out.println("Spawn set to " + this.x + "," + this.y);
+                            System.out.println("Spawn set to " + this.x + "," + this.y);
+                        }
+
+                        if(t.replace != null)
+                            c = t.replace;
                     }
 
-                    if(t.replace != null)
-                        c = t.replace;
+                    map[x][i] = c;
                 }
-
-                map[x][i] = c;
             }
         }
 
@@ -576,6 +588,9 @@ public class Game extends JPanel {
         int mx = (int)(this.mousedx / 3) / 3; // I don't know why it need two /3's. TODO: debug.
         int my = (int)(this.mousedy / 3) / 3;
 
+        int tilex = (int)(getTileX(real_width) / 2);
+        int tiley = (int)(getTileY(real_height) / 2);
+
         for(int x = 0; x < map.length; x++) {
             for(int y = 0; y < map[x].length; y++) { // TODO: Optimize
                 char val = getTile(x, y);
@@ -585,20 +600,15 @@ public class Game extends JPanel {
                     img = getTile(defaultchar).image; // tile_null doesn't seem to be working
                 else
                     img = t.image;
-                g.drawImage(img, (x * 20) + (int)(this.x) + mx, (y * 20) + (int)(this.y) + my, null);
+                g.drawImage(img, (x * 20) + tilex + (int)(this.x) + mx, (y * 20) + tiley + (int)(this.y) + my, null);
             }
         }
 
         if(this.visible) {
-            boolean yeah = w || a || s || d;
-            if(yeah)
-                this.character_id = this.charId(s, d, w, a);
-
-            BufferedImage img = this.getCharacter(character_id, tick, !jumping && yeah);
-            int sizeadjustment = (int)(jumpboost / jumpheight * 1); // change the 1 to change the size when jumping
-            g.drawImage(img, (width / 2) + (sizeadjustment / 2) - 10 + mx,
-                (height / 2) + (sizeadjustment / 2) - 10 + my + (int)jumpboost,
-                img.getWidth() - sizeadjustment, img.getHeight() - sizeadjustment, null);
+            BufferedImage img = this.getCharacter(character_id, tick, !jumping && moving);
+            g.drawImage(img, tilex - 20 + mx,
+                tiley - 20 + my + (int)jumpboost,
+                img.getWidth(), img.getHeight(), null);
         }
 
         g.dispose();
@@ -645,6 +655,8 @@ public class Game extends JPanel {
 
     // returns the value of a tile at x and y
     public char getTile(int x, int y) {
+        x = Math.abs(x);
+        y = Math.abs(y);
         if(!(x < 0 || y < 0 || x > this.map.length - 1 || y > this.map[0].length - 1)) {
             Character val = this.map[x][y];
             return (val != null ? val : defaultchar);
