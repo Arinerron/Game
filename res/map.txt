@@ -1,7 +1,7 @@
 CONFIG:
-background.color=blue
-spawn.x=-40
-spawn.y=-50
+background.color=red
+spawn.x=140
+spawn.y=120
 
 DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
 DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD

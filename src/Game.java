@@ -9,6 +9,7 @@ import javax.imageio.*;
 
 public class Game extends JPanel {
     public boolean running = false;
+    public boolean threadlocked = false;
     public JFrame frame = null;
 
     public boolean slideover = true;
@@ -97,11 +98,12 @@ public class Game extends JPanel {
     public Game() {
         try {
             this.tile_null = getImage("tiles/null");
-
             this.character_spritesheet = getImage("character_spritesheet");
 
             loadTileset("tileset.txt");
             loadMap("map.txt");
+
+            System.out.println("Spawn set to " + this.x + "," + this.y);
         } catch(Exception e) {
             System.err.println("Failed to load resources. Exiting...");
             e.printStackTrace();
@@ -274,94 +276,99 @@ public class Game extends JPanel {
                     tick();
                     updateImage();
 
-                    if(jumpingenabled) {
-                        if(space && !jumping && (tile == null || tile.jump)) {
-                            jumping = true;
-                            jumpingup = true;
-                            jumpboost = 0;
-                            jumptick = tick;
-                        }
-
-                        if(jumping) {
-                            double jspeed = 0.3;
-
-                            if(jumpingup) {
-                                if(jumpboost > -jumpheight)
-                                    jumpboost -= jspeed;
-                                else
-                                    jumpingup = false;
-                            } else {
-                                if(jumpboost < -0.1)
-                                    jumpboost += jspeed;
-                                else {
-                                    jumping = false;
-                                    jumpboost = 0;
-                                }
+                    if(!threadlocked) {
+                            threadlocked = true;
+                            if(jumpingenabled) {
+                            if(space && !jumping && (tile == null || tile.jump)) {
+                                jumping = true;
+                                jumpingup = true;
+                                jumpboost = 0;
+                                jumptick = tick;
                             }
-                        }
-                    }
 
+                            if(jumping) {
+                                double jspeed = 0.3;
 
-                    if(w || s || a || d || middleclicked) {
-                        moving = true;
-                        if(middleclicked) {
-                            if(mousex != 0 && mousey != 0) {
-                                double mousex2 = (real_width / 2) - mousex;
-                                double mousey2 = (real_height / 2) - mousey;
-
-                                xacceleration = mousex2 /(real_width / 2);
-                                yacceleration = mousey2 /(real_height / 2);
-
-                                boolean down = false, right = false, up = false, left = false; // todo improve to only two booleans
-
-                                if(Math.abs(mousex2) > Math.abs(mousey2)) {
-                                    if(mousex2 > 0)
-                                        left = true;
+                                if(jumpingup) {
+                                    if(jumpboost > -jumpheight)
+                                        jumpboost -= jspeed;
                                     else
-                                        right = true;
+                                        jumpingup = false;
                                 } else {
-                                    if(mousey2 > 0)
-                                        up = true;
-                                    else
-                                        down = true;
+                                    if(jumpboost < -0.1)
+                                        jumpboost += jspeed;
+                                    else {
+                                        jumping = false;
+                                        jumpboost = 0;
+                                    }
                                 }
-
-                                Game.this.character_id = charId(down, right, up, left);
                             }
+                        }
+
+
+                        if(w || s || a || d || middleclicked) {
+                            moving = true;
+                            if(middleclicked) {
+                                if(mousex != 0 && mousey != 0) {
+                                    double mousex2 = (real_width / 2) - mousex;
+                                    double mousey2 = (real_height / 2) - mousey;
+
+                                    xacceleration = mousex2 / (real_width / 2);
+                                    yacceleration = mousey2 / (real_height / 2);
+
+                                    boolean down = false, right = false, up = false, left = false; // todo improve to only two booleans
+
+                                    if(Math.abs(mousex2) > Math.abs(mousey2)) {
+                                        if(mousex2 > 0)
+                                            left = true;
+                                        else
+                                            right = true;
+                                    } else {
+                                        if(mousey2 > 0)
+                                            up = true;
+                                        else
+                                            down = true;
+                                    }
+
+                                    Game.this.character_id = charId(down, right, up, left);
+                                }
+                            } else
+                                Game.this.character_id = charId(s, d, w, a);
+
+                            if(w) {
+                                yacceleration += acceleration;
+                            }
+                            if(s) {
+                                yacceleration -= acceleration;
+                            }
+                            if(a) {
+                                xacceleration += acceleration;
+                            }
+                            if(d) {
+                                xacceleration -= acceleration;
+                            }
+
+                            if(xacceleration > speed)
+                                xacceleration = speed;
+                            else if(xacceleration < -speed)
+                                xacceleration = -speed;
+                            if(yacceleration > speed)
+                                yacceleration = speed;
+                            else if(yacceleration < -speed)
+                                yacceleration = -speed;
+
+                            x += xacceleration;
+                            y += yacceleration;
                         } else
-                            Game.this.character_id = charId(s, d, w, a);
+                            moving = false;
 
-                        if(w) {
-                            yacceleration += acceleration;
-                        }
-                        if(s) {
-                            yacceleration -= acceleration;
-                        }
-                        if(a) {
-                            xacceleration += acceleration;
-                        }
-                        if(d) {
-                            xacceleration -= acceleration;
-                        }
+                        calculateSpeed();
 
-                        if(xacceleration > speed)
-                            xacceleration = speed;
-                        else if(xacceleration < -speed)
-                            xacceleration = -speed;
-                        if(yacceleration > speed)
-                            yacceleration = speed;
-                        else if(yacceleration < -speed)
-                            yacceleration = -speed;
+                        if(tile.dangerous)
+                            kill();
 
-                        x += xacceleration;
-                        y += yacceleration;
-                    } else
-                        moving = false;
-
-                    calculateSpeed();
-
-                    if(tile.dangerous)
-                        kill();
+                        threadlocked = false;
+                    }
                 }
             }
         }, rate, rate);
@@ -388,22 +395,18 @@ public class Game extends JPanel {
 
     // returns the tile object the player is on
     public Tile getCurrentTile() {
-        this.tile = getTile(getTile(getTileX(x), getTileY(y)));
+        this.tile = getTile(getTile((int)((x + 10) / 20),(int)(y / 20)));
         return this.tile;
     }
 
     // gets the X position of a tile from a raw X position
     public int getTileX(double x) {
-        System.out.println("x=" + (int)x + " & to=" + ((int)(x * (real_width / width)) / 10 / 9) + " & sup=" + (-(int)((x/20) - (width / 40))) + " ");
-        return (int)(x / (real_width / width)); // 1000 / 12
-        //return -(int)((x/20) - (width / 40));
+        return (int)(x / (real_width / width));
     }
 
     // gets the Y position of a tile from a raw Y position
     public int getTileY(double y) {
-        System.out.println("cur=" + (tile != null ? this.tile.character : "null") + " & y=" + (int)y + " & sup=" + (-(int)(((y-10)/20) - (height / 40))) + " & to=" + ((int)(y * (real_height / height)) / 10 / 9));
         return (int)(y / (real_height / height));
-        //return -(int)(((y-10)/20) - (height / 40));
     }
 
     // gets the X position from a tile x
@@ -431,7 +434,7 @@ public class Game extends JPanel {
         if(config) {
             String[] cfg = file.substring(0, file.indexOf("\n\n")).split(Pattern.quote("\n"));
             for(String line : cfg) {
-                if(!line.startsWith("CONFIG:")) {
+                if(!line.startsWith("CONFIG:") && !line.startsWith("#")) {
                     String[] pair = line.split(Pattern.quote("="));
                     String key = pair[0];
                     String val = pair[1];
@@ -441,10 +444,12 @@ public class Game extends JPanel {
                             this.background = (Color) Color.class.getField(val.toLowerCase()).get(null);
                             break;
                         case "spawn.x":
-                            this.spawnx = Integer.parseInt(val);
+                            this.spawnx = -Integer.parseInt(val);
+                            this.x = this.spawnx;
                             break;
                         case "spawn.y":
-                            this.spawny = Integer.parseInt(val);
+                            this.spawny = -Integer.parseInt(val);
+                            this.y = this.spawny;
                             break;
                         default:
                             System.out.println("Unknown config option \"" + key + "\" for map file \"" + name + "\".");
@@ -473,12 +478,10 @@ public class Game extends JPanel {
                     Tile t = getTile(c);
                     if(t != null) {
                         if(t.spawn) { // still debugging spawn :(
-                            this.x = -(int)(x) - width;
-                            this.y = -(int)(i) - height;
+                            this.x = -(int)x - width;
+                            this.y = -(int)i - height;
                             this.spawnx = -(int)x - width;
                             this.spawny = -(int)i - height;
-
-                            System.out.println("Spawn set to " + this.x + "," + this.y);
                         }
 
                         if(t.replace != null)
@@ -591,16 +594,20 @@ public class Game extends JPanel {
         int tilex = (int)(getTileX(real_width) / 2);
         int tiley = (int)(getTileY(real_height) / 2);
 
-        for(int x = 0; x < map.length; x++) {
-            for(int y = 0; y < map[x].length; y++) { // TODO: Optimize
-                char val = getTile(x, y);
+        // do NOT change these
+        final double x = this.x;
+        final double y = this.y;
+
+        for(int x2 = 0; x2 < map.length; x2++) {
+            for(int y2 = 0; y2 < map[x2].length; y2++) { // TODO: Optimize
+                char val = getTile(x2, y2);
                 Tile t = getTile(val);
                 BufferedImage img = null;
                 if(t == null)
                     img = getTile(defaultchar).image; // tile_null doesn't seem to be working
                 else
                     img = t.image;
-                g.drawImage(img, (x * 20) + tilex + (int)(this.x) + mx, (y * 20) + tiley + (int)(this.y) + my, null);
+                g.drawImage(img, (x2 * 20) + tilex + (int)(x) + mx, (y2 * 20) + tiley + (int)(y) + my, null);
             }
         }
 
@@ -680,7 +687,7 @@ public class Game extends JPanel {
 
     // gets a BufferedImage of the character from a spritesheet
     public BufferedImage getCharacter(int direction, int tick, boolean walking) {
-        int i = (int)(tick / ((rate / speed) * 1.6)) % 4;
+        int i = (int)(tick / ((rate / (speed)) * 1.6)) % 4;
         return character_spritesheet.getSubimage(walking ? (i == 0 || i == 2 ? 0 : (i == 1 ? 1 : 2)) * 16 : 0, direction * 20, 16, 20);
     }
 
