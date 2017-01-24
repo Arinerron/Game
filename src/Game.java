@@ -83,19 +83,24 @@ public class Game extends JPanel {
         this();
         for(String arg : args) {
             String[] split = arg.split(Pattern.quote("=")); // TODO: just split on the first =
-            switch(split[0].toLowerCase()) { // TODO: Error handling
-                case "jump":
-                    this.jumpingenabled = Boolean.parseBoolean(split[1]);
-                    break;
-                case "8bit":
-                    eightbit = Boolean.parseBoolean(split[1]);
-                    break;
-                case "pan":
-                    slideover = Boolean.parseBoolean(split[1]);
-                    break;
-                default:
-                    System.out.println("Unknown parameter \"" + split[0] + "\" for game arguments.");
-                    break;
+            try {
+                switch(split[0].toLowerCase()) { // TODO: Error handling
+                    case "jump":
+                        this.jumpingenabled = Boolean.parseBoolean(split[1]);
+                        break;
+                    case "8bit":
+                        eightbit = Boolean.parseBoolean(split[1]);
+                        break;
+                    case "pan":
+                        slideover = Boolean.parseBoolean(split[1]);
+                        break;
+                    default:
+                        System.out.println("Unknown parameter \"" + split[0] + "\" for game arguments.");
+                        break;
+                }
+            } catch(Exception e) {
+                System.err.println("Failed to parse parameters for game arguments.");
+                System.exit(1);
             }
         }
     }
@@ -171,6 +176,7 @@ public class Game extends JPanel {
                 else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
                     shift = false;
                 else if(e.getKeyCode() == KeyEvent.VK_B)
+                    eightbit = !eightbit;
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -372,6 +378,7 @@ public class Game extends JPanel {
         }, rate, rate);
     }
 
+    // sets a spawn point and logs it
     public void setSpawn(double x, double y, boolean abs) {
         boolean print = (int)x != (int)this.spawnx && (int)y != (int)this.spawny;
 
