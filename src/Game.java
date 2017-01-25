@@ -416,10 +416,16 @@ public class Game extends JPanel {
 
     // calculate what speed to travel at
     public void calculateSpeed() {
+        boolean slippery = (tile != null ? tile.slippery : false);
         Tile tile = getCurrentTile();
-        if(tile != null)
+        if(tile != null) {
             speed = Math.abs(tile.speed);
-        else
+
+            if(!tile.slippery && slippery) {
+                xacceleration = 0;
+                yacceleration = 0;
+            }
+        } else
             speed = 0.3;
         if(rightclicked || middleclicked)
             speed += 0.1;
