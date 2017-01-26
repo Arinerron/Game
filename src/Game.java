@@ -372,16 +372,20 @@ public class Game extends JPanel {
                         if(tile != null) {
                             acceleration = tile.acceleration;
 
-                            if(tile.dangerous && !jumping)
+                            if(tile.dangerous && !jumping) {
                                 kill();
-                            else if(tile.checkpoint) {
-                                setSpawn(Game.this.x, Game.this.y, false);
-                            } else if(tile.slippery && !jumping) {
-                                x += xacceleration;
-                                y += yacceleration;
-                            } else if(moving) {
-                                x += xacceleration;
-                                y += yacceleration;
+                            } else  {
+                                if(tile.checkpoint) {
+                                    setSpawn(Game.this.x, Game.this.y, false);
+                                }
+
+                                if(tile.slippery && !jumping) {
+                                    x += xacceleration;
+                                    y += yacceleration;
+                                } else if(moving) {
+                                    x += xacceleration;
+                                    y += yacceleration;
+                                }
                             }
                         } else
                             System.out.println("null!");
@@ -416,7 +420,7 @@ public class Game extends JPanel {
 
     // calculate what speed to travel at
     public void calculateSpeed() {
-        boolean slippery = (tile != null ? tile.slippery : false);
+        boolean slippery = (tile != null ? tile.slippery : false); // todo optimize
         Tile tile = getCurrentTile();
         if(tile != null) {
             speed = Math.abs(tile.speed);

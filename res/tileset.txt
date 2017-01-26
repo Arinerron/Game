@@ -29,6 +29,7 @@
 S null spawn replace=tiles/dirt
 D tiles/dirt
 . tiles/water speed=0.2 nojump
-L tiles/lava fluid nojump dangerous default
+L tiles/lava fluid nojump dangerous
 C tiles/dirt checkpoint
 _ tiles/ice speed=0.4 acceleration=0.0008 nojump slippery
+G tiles/gravel acceleration=0.1 speed=0.5 default
