@@ -3,7 +3,7 @@ Just some random game without a name I feel like making. That's right, in one cl
 
 # Installing Game
 ```
-git clone https://github.com/Arinerron/Game.git
+git clone https://github.com/Arinerron/Game.git && cd Game
 ```
 
 # Starting Game
