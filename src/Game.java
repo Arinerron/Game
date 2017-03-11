@@ -16,6 +16,10 @@ public class Game extends JPanel {
     public boolean eightbit = false;
     public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
+    /*
+     * interesting fact: it would take 4 months and 2 weeks for the tick to
+     * make the tick large enough to crash the game cause it is over the max int
+     */
 
     public static final int tilesize = 20; // set this to the tilesize
     public int width = tilesize * 12; // 16
@@ -214,9 +218,11 @@ public class Game extends JPanel {
                     mousedx = firstmousex - mousex;
                     mousedy = firstmousey - mousey;
                 } else if(SwingUtilities.isMiddleMouseButton(e)) {
-                    middleclicked = true;
-                    mousex = e.getX();
-                    mousey = e.getY();
+                    if(slideover) {
+                        middleclicked = true;
+                        mousex = e.getX();
+                        mousey = e.getY();
+                    }
                 }
             }
 
@@ -246,7 +252,7 @@ public class Game extends JPanel {
             }
 
             public void mouseDragged(MouseEvent e) {
-                if(rightclicked || clicked || middleclicked) {
+                if(clicked || ((rightclicked || middleclicked) && slideover)) {
                     mousex = e.getX();
                     mousey = e.getY();
 
@@ -314,9 +320,9 @@ public class Game extends JPanel {
                         }
 
 
-                        if(w || s || a || d || middleclicked || jumping) {
+                        if(w || s || a || d || (middleclicked && slideover) || jumping) {
                             moving = true;
-                            if(middleclicked) {
+                            if(middleclicked && slideover) {
                                 if(mousex != 0 && mousey != 0) {
                                     double mousex2 = (real_width / 2) - mousex;
                                     double mousey2 = (real_height / 2) - mousey;
@@ -449,7 +455,7 @@ public class Game extends JPanel {
             }
         } else
             speed = 0.3;
-        if(rightclicked || middleclicked)
+        if(slideover && rightclicked || middleclicked)
             speed += 0.1;
         else if(shift)
             speed = speed / 2;
