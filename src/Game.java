@@ -73,6 +73,7 @@ public class Game extends JPanel {
     public double jumpheight = 20;
     public boolean moving = false;
     public double speed = 0.4;
+    public int filter = 0;
     public double acceleration = 0.0125;
     public double xacceleration = 0;
     public double yacceleration = 0;
@@ -150,11 +151,7 @@ public class Game extends JPanel {
                 } else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
                     System.exit(0);
                 else if(e.getKeyCode() == KeyEvent.VK_R) {
-                    x = spawnx;
-                    y = spawny;
-                    xacceleration = 0;
-                    yacceleration = 0;
-                    character_current = character_down;
+                    reset();
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = true;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
@@ -229,6 +226,8 @@ public class Game extends JPanel {
                     mousedy = 0;
                 } else if(SwingUtilities.isMiddleMouseButton(e)) {
                     middleclicked = false;
+                    xacceleration = 0;
+                    yacceleration = 0;
                 }
             }
 
@@ -379,6 +378,8 @@ public class Game extends JPanel {
                             if(tile.dangerous && !jumping) {
                                 kill();
                             } else  {
+                                if(tile.filterset)
+                                    filter = tile.filter;
                                 if(tile.checkpoint) {
                                     setSpawn(Game.this.x, Game.this.y, false);
                                 }
@@ -418,8 +419,17 @@ public class Game extends JPanel {
 
     // kills the player
     public void kill() {
-        this.x = this.spawnx;
-        this.y = this.spawny;
+        reset();
+    }
+
+    // resets player state
+    public void reset() {
+            this.x = this.spawnx;
+            this.y = this.spawny;
+            this.xacceleration = 0;
+            this.yacceleration = 0;
+            this.character_current = this.character_down;
+            this.filter = 0;
     }
 
     // calculate what speed to travel at
@@ -578,7 +588,11 @@ public class Game extends JPanel {
                                     break;
                                 case "sticky":
                                     tile.slippery = false;
-
+                                    break;
+                                case "filter":
+                                    tile.filter = (int)((Double.parseDouble(pair[1])) * 2.54);
+                                    tile.filterset = true;
+                                    break;
                                 case "safe":
                                     tile.dangerous = false;
                                     break;
@@ -670,6 +684,11 @@ public class Game extends JPanel {
             g.drawImage(img, tilex - 20 + mx,
                 tiley - 20 + my + (int)jumpboost,
                 img.getWidth(), img.getHeight(), null);
+        }
+
+        if(filter != 0) {
+            g.setColor(new Color(0, 0, 0, filter));
+            g.fillRect(0, 0, image.getWidth(), image.getHeight());
         }
 
         g.dispose();
@@ -796,6 +815,8 @@ class Tile {
     public boolean spawn = false;
     public char replace = ' ';
     public double speed = 0.4;
+    public int filter = 0;
+    public boolean filterset = false;
     public boolean jump = true;
     public boolean defaultchar = false;
     public boolean checkpoint = false;

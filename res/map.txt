@@ -8,30 +8,35 @@ CONFIG:
 # Note that the coordinates MUST be integers. A tile is 20x20, so if you want to
 # set the spawn to third tile over, it would be 20*3, which equals 60.
 #
-background.color=red
-spawn.x=140
-spawn.y=120
+background.color=black
+spawn.x=440
+spawn.y=200
 #
 # The configuration ends with the empty line (ex, the one below).
 
-DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
-DDDDDDDDDDDDDDDDDDDDDDDD                                 DDDDD
-    DDDDD             DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-    DDDDD             DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-    DDDDDDDDDDDDDDDDDDDD_________________________________DDDDD
-    DDDDDDDDDDDDDDDDDDDD_________________________________DDDDD
-DDDDDDDDDDDDDDDDDDDDDDDD_________________________________DDDDD
-D                     DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-D            C        DLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLDDDDD
-D           CCC       DLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLDDDDD
-D      C              DLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLDDDDD
-D                     DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-D      D                                                 DDDDD
-DD DDD D  D DDDDDD  DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-D                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-D                   DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-D                   DDDD
-D                   DDDD
-D                   DDDD
-D                   DDDD
-D                   DDDD
+L                                                                       LLLLLLLLLLLLLLLLLLLLLLLLLLLL
+L
+L
+L
+L
+L
+L
+L
+                    DDDDDDDDDDDDDDDC________________________________CDDDD
+                    DDDDDDDDDDDDDDDC________________________________CDDDD
+                    DDDDDDDDDDDDDDDC________________________________CDDDD
+                                                                    RRRRR
+                                                                    11111
+                                                                    22222
+                                                                    33333
+                                                                    44444
+                                                                    55555
+                                                                    66666
+                                                                    77777
+                                                                    88888
+                                                                    99999
+                                                                    00000
+                                                                    DDDDD
+                                                                    DDDDD
+                                                                    DDDDD
+                                                                    DDDDD

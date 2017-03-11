@@ -23,13 +23,27 @@
 # - default - Replace spaces by default with tile
 # - replace=<char> - Replaces tile with char
 # - speed=<double> - Sets the speed while on tile
+# - filter=<int> - Sets the percent darkness to apply
 
 # Default tiles
 ? tiles/null solid nojump
 S null spawn replace=tiles/dirt
 D tiles/dirt
 . tiles/water speed=0.2 nojump
-L tiles/lava fluid nojump dangerous
+L tiles/lava fluid nojump dangerous default
 C tiles/dirt checkpoint
 _ tiles/ice speed=0.4 acceleration=0.0008 nojump slippery
-G tiles/gravel acceleration=0.1 speed=0.5 default
+G tiles/gravel acceleration=0.1 speed=0.5
+
+# Path tiles
+R tiles/dirt speed=0.5 filter=0
+1 tiles/dirt speed=0.4 filter=10
+2 tiles/dirt speed=0.35 filter=20
+3 tiles/dirt speed=0.3 filter=30
+4 tiles/dirt speed=0.25 filter=40
+5 tiles/dirt speed=0.225 filter=50
+6 tiles/dirt speed=0.2125 filter=60
+7 tiles/dirt speed=0.2 filter=70
+8 tiles/dirt speed=0.15 filter=80
+9 tiles/dirt speed=0.1 filter=90
+0 tiles/dirt speed=0.05 filter=100
