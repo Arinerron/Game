@@ -563,84 +563,85 @@ public class Game extends JPanel {
                 Tile tile = new Tile();
 
                 for(int i = 0; i < split.length; i++) {
-                    switch(i) {
-                        case 0:
-                            tile.character = split[i].charAt(0);
-                            break;
-                        case 1:
-                            if(split[i].equalsIgnoreCase("null"))
-                                tile.image = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
-                            else
-                                tile.image = getImage(split[i]);
-                            break;
-                        default:
-                            String[] pair = split[i].split(Pattern.quote("="));
-                            String key = pair[0];
+                    if(split[i].length() != 0) // make sure the parameter isn't empty
+                        switch(i) {
+                            case 0: // if it is the first parameter on the line
+                                tile.character = split[i].charAt(0);
+                                break;
+                            case 1: // if it is the second
+                                if(split[i].equalsIgnoreCase("null"))
+                                    tile.image = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
+                                else
+                                    tile.image = getImage(split[i]);
+                                break;
+                            default: // otherwise, it is one of the optional parameters
+                                String[] pair = split[i].split(Pattern.quote("="));
+                                String key = pair[0];
 
-                            switch(key.toLowerCase()) {
-                                case "fluid":
-                                    tile.solid = false;
-                                    break;
-                                case "solid":
-                                    tile.solid = true;
-                                    break;
-                                case "dangerous":
-                                    tile.dangerous = true;
-                                    break;
-                                case "slippery":
-                                    tile.slippery = true;
-                                    break;
-                                case "sticky":
-                                    tile.slippery = false;
-                                    break;
-                                case "filter":
-                                    tile.filter = (int)((Double.parseDouble(pair[1])) * 2.54);
-                                    tile.filterset = true;
-                                    break;
-                                case "safe":
-                                    tile.dangerous = false;
-                                    break;
-                                case "replace":
-                                    tile.replace = pair[1].charAt(0);
-                                    break;
-                                case "speed":
-                                    tile.speed = Double.parseDouble(pair[1]);
-                                    break;
-                                case "acceleration":
-                                    tile.acceleration = Double.parseDouble(pair[1]);
-                                    break;
-                                case "spawn":
-                                    tile.spawn = true;
-                                    break;
-                                case "checkpoint":
-                                    tile.checkpoint = true;
-                                    break;
-                                case "nojump":
-                                    tile.jump = false;
-                                    break;
-                                case "jump":
-                                    tile.jump = true;
-                                    break;
-                                case "dither":
-                                    tile.dither = true;
-                                    break;
-                                case "lock":
-                                    tile.slideover = false;
-                                    break;
-                                case "unlock":
-                                    tile.slideover = true;
-                                    break;
-                                case "default":
-                                    tile.defaultchar = true;
-                                    defaultchar = tile.character;
-                                    tile_null = tile.image;
-                                    break;
-                                default:
-                                    System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
-                                    break;
-                            }
-                            break;
-                    }
+                                switch(key.toLowerCase()) {
+                                    case "fluid":
+                                        tile.solid = false;
+                                        break;
+                                    case "solid":
+                                        tile.solid = true;
+                                        break;
+                                    case "dangerous":
+                                        tile.dangerous = true;
+                                        break;
+                                    case "slippery":
+                                        tile.slippery = true;
+                                        break;
+                                    case "sticky":
+                                        tile.slippery = false;
+                                        break;
+                                    case "filter":
+                                        tile.filter = (int)((Double.parseDouble(pair[1])) * 2.54);
+                                        tile.filterset = true;
+                                        break;
+                                    case "safe":
+                                        tile.dangerous = false;
+                                        break;
+                                    case "replace":
+                                        tile.replace = pair[1].charAt(0);
+                                        break;
+                                    case "speed":
+                                        tile.speed = Double.parseDouble(pair[1]);
+                                        break;
+                                    case "acceleration":
+                                        tile.acceleration = Double.parseDouble(pair[1]);
+                                        break;
+                                    case "spawn":
+                                        tile.spawn = true;
+                                        break;
+                                    case "checkpoint":
+                                        tile.checkpoint = true;
+                                        break;
+                                    case "nojump":
+                                        tile.jump = false;
+                                        break;
+                                    case "jump":
+                                        tile.jump = true;
+                                        break;
+                                    case "dither":
+                                        tile.dither = true;
+                                        break;
+                                    case "lock":
+                                        tile.slideover = false;
+                                        break;
+                                    case "unlock":
+                                        tile.slideover = true;
+                                        break;
+                                    case "default":
+                                        tile.defaultchar = true;
+                                        defaultchar = tile.character;
+                                        tile_null = tile.image;
+                                        break;
+                                    default:
+                                        System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
+                                        break;
+                                }
+                                break;
+                        }
                 }
 
                 tiles.add(tile);
