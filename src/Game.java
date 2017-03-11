@@ -712,23 +712,23 @@ public class Game extends JPanel {
     // Generate image and generate position vars
     public void setImage(BufferedImage image) {
         // Sorry if this part isn't readable. <excuse>It's a little too complicated to document or come up with good var names.</excuse>
-
-		if((double)((double)real_height / (double)image.getHeight()) < (double)((double)real_width / (double)image.getWidth())) {
-            // if screen width > height
-    		togo = (double)((double)real_height / (double)image.getHeight());
-    		wid = (int)(image.getWidth() * togo);
-    		hei = real_height;
-    		add = (real_width / 2) - (wid / 2);
-    		addy = 0;
-		} else {
-            // if screen width < height
-            togo = (double)((double)real_width / (double)image.getWidth());
-            wid = real_width;
-            hei = (int)(image.getHeight() * togo);
-            addy = (real_height / 2) - (hei / 2);
-            add = 0;
-        }
         if(this.image != image) {
+            if((double)((double)real_height / (double)image.getHeight()) < (double)((double)real_width / (double)image.getWidth())) {
+                // if screen width > height
+        		togo = (double)((double)real_height / (double)image.getHeight());
+        		wid = (int)(image.getWidth() * togo);
+        		hei = real_height;
+        		add = (real_width / 2) - (wid / 2);
+        		addy = 0;
+    		} else {
+                // if screen width < height
+                togo = (double)((double)real_width / (double)image.getWidth());
+                wid = real_width;
+                hei = (int)(image.getHeight() * togo);
+                addy = (real_height / 2) - (hei / 2);
+                add = 0;
+            }
+
             this.image = image;
             this.repaint();
         }
