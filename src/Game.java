@@ -17,8 +17,11 @@ public class Game extends JPanel {
     public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
 
-    public int width = 20 * 12; // 16
-    public int height = 20 * 6; // 9
+    public static final int tilesize = 20; // set this to the tilesize
+    public int width = tilesize * 12; // 16
+    public int height = tilesize * 6; // 9
+
+    public final int half = (int)(tilesize / 2);
     public int real_width = 0;
     public int real_height = 0;
 
@@ -70,7 +73,7 @@ public class Game extends JPanel {
     public char defaultchar = '?';
     public boolean visible = true;
 
-    public double jumpheight = 20;
+    public double jumpheight = tilesize;
     public boolean moving = false;
     public double speed = 0.4;
     public int filter = 0;
@@ -454,7 +457,7 @@ public class Game extends JPanel {
 
     // returns the tile object the player is on
     public Tile getCurrentTile() {
-        this.tile = getTile(getTile((int)((x + 10) / 20),(int)(y / 20)));
+        this.tile = getTile(getTile((int)((x + half) / tilesize),(int)(y / tilesize)));
         return this.tile;
     }
 
@@ -566,7 +569,7 @@ public class Game extends JPanel {
                             break;
                         case 1:
                             if(split[i].equalsIgnoreCase("null"))
-                                tile.image = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
+                                tile.image = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
                             else
                                 tile.image = getImage(split[i]);
                             break;
@@ -685,14 +688,14 @@ public class Game extends JPanel {
                     img = getTile(defaultchar).image; // tile_null doesn't seem to be working
                 else
                     img = t.image;
-                g.drawImage(img, (x2 * 20) + tilex + (int)(x) + mx, (y2 * 20) + tiley + (int)(y) + my, null);
+                g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
             }
         }
 
         if(this.visible) {
             BufferedImage img = this.getCharacter(character_id, tick, !jumping && moving);
-            g.drawImage(img, tilex - 20 + mx,
-                tiley - 20 + my + (int)jumpboost,
+            g.drawImage(img, tilex - tilesize + mx,
+                tiley - tilesize + my + (int)jumpboost,
                 img.getWidth(), img.getHeight(), null);
         }
 
@@ -772,8 +775,9 @@ public class Game extends JPanel {
 
     // gets a BufferedImage of the character from a spritesheet
     public BufferedImage getCharacter(int direction, int tick, boolean walking) {
+        final int characterwidth = 16, characterheight = 20;
         int i = (int)(tick / ((rate / (speed)) * 1.6)) % 4;
-        return character_spritesheet.getSubimage(walking ? (i == 0 || i == 2 ? 0 : (i == 1 ? 1 : 2)) * 16 : 0, direction * 20, 16, 20);
+        return character_spritesheet.getSubimage(walking ? (i == 0 || i == 2 ? 0 : (i == 1 ? 1 : 2)) * characterwidth : 0, direction * characterheight, characterwidth, characterheight);
     }
 
     // gets a BufferedImage of the character by booleans

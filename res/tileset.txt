@@ -42,7 +42,7 @@ G tiles/gravel acceleration=0.1 speed=0.5
 R tiles/dirt speed=0.5 filter=0
 1 tiles/dirt speed=0.4 filter=10 lock
 2 tiles/dirt speed=0.35 filter=20 lock
-3 tiles/dirt speed=0.3 filter=30  lock
+3 tiles/dirt speed=0.3 filter=30 lock
 4 tiles/dirt speed=0.25 filter=40 lock
 5 tiles/dirt speed=0.225 filter=50 lock
 6 tiles/dirt speed=0.2125 filter=60 lock
