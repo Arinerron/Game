@@ -728,25 +728,24 @@ public class Game extends JPanel {
             addy = (real_height / 2) - (hei / 2);
             add = 0;
         }
-
-		this.image = image;
+        if(this.image != image) {
+            this.image = image;
+            this.repaint();
+        }
     }
 
     // draw whatever is in the image variable
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
         /**
          * Sorry, I know this is confusing.
          * I really didn't document this well.
          * If you have any questions, feel
          * free to contact me at me@arinerron.com
          */
-        if(this.image != null)
+        if(this.image != null) {
+            super.paintComponent(g);
             g.drawImage(this.image, add, addy, wid, hei, null);
-
-        try { Thread.sleep(5); /* give the gpu a short break */ } catch(Exception e) { e.printStackTrace(); }
-        this.repaint();
+        }
     }
 
     // returns the value of a tile at x and y
