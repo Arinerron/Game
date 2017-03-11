@@ -220,7 +220,7 @@ public class Game extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 if(SwingUtilities.isLeftMouseButton(e))
                     clicked = false;
-                else if(SwingUtilities.isRightMouseButton(e)) {
+                else if(SwingUtilities.isRightMouseButton(e) || !slideover) {
                     rightclicked = false;
                     mousedx = 0;
                     mousedy = 0;
@@ -380,9 +380,8 @@ public class Game extends JPanel {
                             } else  {
                                 if(tile.filterset)
                                     filter = tile.filter;
-                                if(tile.checkpoint) {
+                                if(tile.checkpoint)
                                     setSpawn(Game.this.x, Game.this.y, false);
-                                }
 
                                 if(tile.slippery && !jumping) {
                                     x += xacceleration;
@@ -391,6 +390,8 @@ public class Game extends JPanel {
                                     x += xacceleration;
                                     y += yacceleration;
                                 }
+
+                                Game.this.slideover = tile.slideover;
                             }
                         } else
                             System.out.println("null!");
@@ -617,6 +618,15 @@ public class Game extends JPanel {
                                 case "jump":
                                     tile.jump = true;
                                     break;
+                                case "dither":
+                                    tile.dither = true;
+                                    break;
+                                case "lock":
+                                    tile.slideover = false;
+                                    break;
+                                case "unlock":
+                                    tile.slideover = true;
+                                    break;
                                 case "default":
                                     tile.defaultchar = true;
                                     defaultchar = tile.character;
@@ -645,7 +655,7 @@ public class Game extends JPanel {
     // update the image variable so it knows what to draw
     public void updateImage() {
         BufferedImage image = null;
-        if(eightbit)
+        if(eightbit || (this.tile != null && this.tile.dither))
             image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
         else
             image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -821,4 +831,6 @@ class Tile {
     public boolean defaultchar = false;
     public boolean checkpoint = false;
     public double acceleration = 0.0125;
+    public boolean dither = false;
+    public boolean slideover = true;
 }

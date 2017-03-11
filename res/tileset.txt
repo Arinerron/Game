@@ -20,6 +20,9 @@
 # - checkpoint - Sets a checkpoint to spawn at on touch
 # - nojump - Disable jumping on tile
 # - jump - Enable jumping on tile
+# - dither - Enable dithering while on tile
+# - lock - Disable panning (right-click)
+# - unlock - Enable panning (right-click)
 # - default - Replace spaces by default with tile
 # - replace=<char> - Replaces tile with char
 # - speed=<double> - Sets the speed while on tile
@@ -37,13 +40,13 @@ G tiles/gravel acceleration=0.1 speed=0.5
 
 # Path tiles
 R tiles/dirt speed=0.5 filter=0
-1 tiles/dirt speed=0.4 filter=10
-2 tiles/dirt speed=0.35 filter=20
-3 tiles/dirt speed=0.3 filter=30
-4 tiles/dirt speed=0.25 filter=40
-5 tiles/dirt speed=0.225 filter=50
-6 tiles/dirt speed=0.2125 filter=60
-7 tiles/dirt speed=0.2 filter=70
-8 tiles/dirt speed=0.15 filter=80
-9 tiles/dirt speed=0.1 filter=90
-0 tiles/dirt speed=0.05 filter=100
+1 tiles/dirt speed=0.4 filter=10 lock
+2 tiles/dirt speed=0.35 filter=20 dither lock
+3 tiles/dirt speed=0.3 filter=30 dither lock
+4 tiles/dirt speed=0.25 filter=40 dither lock
+5 tiles/dirt speed=0.225 filter=50 dither lock
+6 tiles/dirt speed=0.2125 filter=60 dither lock
+7 tiles/dirt speed=0.2 filter=70 dither lock
+8 tiles/dirt speed=0.15 filter=80 dither lock
+9 tiles/dirt speed=0.1 filter=90 dither lock
+0 tiles/dirt speed=0.05 filter=100 lock
