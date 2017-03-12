@@ -288,7 +288,6 @@ public class Game extends JPanel {
             public void run() {
                 if(running) {
                     tick();
-                    updateImage();
 
                     if(!threadlocked) {
                             threadlocked = true;
@@ -405,6 +404,7 @@ public class Game extends JPanel {
                         } else
                             System.out.println("null!");
 
+                        updateImage();
                         threadlocked = false;
                     }
                 }
@@ -685,8 +685,12 @@ public class Game extends JPanel {
         // do NOT change these
         final double x = this.x;
         final double y = this.y;
+        System.out.println("this.x=" + (int)this.x + " && this.y=" + (int)this.y + " && tilex=" + tilex + " && tiley=" + tiley);
 
         for(int x2 = 0; x2 < map.length; x2++) {
+            //System.out.println(-getRealX(x2) + " > " + (this.x - tilex) + " == " + (-getRealX(x2) > this.x - tilex) +
+            //                    " && " + -getRealX(x2) + " < " + (this.x + tilex) + " == " + (-getRealX(x2) < this.x + tilex));
+            //if(-getRealX(x2) > this.x - tilex && -getRealX(x2) < this.x + tilex)
             for(int y2 = 0; y2 < map[x2].length; y2++) { // TODO: Optimize
                 char val = getTile(x2, y2);
                 Tile t = getTile(val);
@@ -697,7 +701,7 @@ public class Game extends JPanel {
                     img = t.image;
                 g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
             }
-        }
+        }g.setColor(Color.RED);g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
 
         if(this.visible) {
             BufferedImage img = this.getCharacter(character_id, tick, !jumping && moving);
