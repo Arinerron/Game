@@ -21,7 +21,7 @@ public class Game extends JPanel {
      * make the tick large enough to crash the game cause it is over the max int
      */
 
-    public static final int tilesize = 20; // set this to the tilesize
+    public static final int tilesize = 16; // set this to the tilesize
     public int width = tilesize * 12; // 16
     public int height = tilesize * 6; // 9
 
@@ -685,12 +685,8 @@ public class Game extends JPanel {
         // do NOT change these
         final double x = this.x;
         final double y = this.y;
-        System.out.println("this.x=" + (int)this.x + " && this.y=" + (int)this.y + " && tilex=" + tilex + " && tiley=" + tiley);
 
         for(int x2 = 0; x2 < map.length; x2++) {
-            //System.out.println(-getRealX(x2) + " > " + (this.x - tilex) + " == " + (-getRealX(x2) > this.x - tilex) +
-            //                    " && " + -getRealX(x2) + " < " + (this.x + tilex) + " == " + (-getRealX(x2) < this.x + tilex));
-            //if(-getRealX(x2) > this.x - tilex && -getRealX(x2) < this.x + tilex)
             for(int y2 = 0; y2 < map[x2].length; y2++) { // TODO: Optimize
                 char val = getTile(x2, y2);
                 Tile t = getTile(val);
@@ -701,7 +697,9 @@ public class Game extends JPanel {
                     img = t.image;
                 g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
             }
-        }g.setColor(Color.RED);g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
+        }
+        g.setColor(Color.RED);
+        g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
 
         if(this.visible) {
             BufferedImage img = this.getCharacter(character_id, tick, !jumping && moving);
@@ -803,15 +801,7 @@ public class Game extends JPanel {
 
     // loads a bufferedimage in by filename
     public BufferedImage getImage(String name) throws Exception {
-        BufferedImage in = ImageIO.read(new File("../res/" + name + ".png"));
-
-        BufferedImage newImage = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g = newImage.createGraphics();
-        g.drawImage(in, 0, 0, null);
-        g.dispose();
-
-        return newImage;
+        return ImageIO.read(new File("../res/" + name + ".png"));
     }
 
     // loads a string in by filename
