@@ -23,16 +23,20 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
+import java.util.zip.DataFormatException;
 
 public class Main {
-    static int colorMap = 0;
-    static int xmax = 48;
-    static int ymax = 64;
-    static final int pixelsize = 12;
-    static byte[] colormap = new byte[xmax * ymax];
+    static int xmax = 16;
+    static int ymax = 16;
+    static int pixelsize = 16;
+    static byte[] colormap = new byte[xmax * ymax + 1];
     static byte currentColor = 0;
     static final JFileChooser fc = new JFileChooser(new File("."));
     static JFrame frame;
@@ -106,18 +110,19 @@ public class Main {
         new Color(0x000000)
     };
     static JPanel panel1;
+    static JPanel panel2;
     
     public static void main(String[] args) {
         fc.setAcceptAllFileFilterUsed(true);
         fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new FileNameExtensionFilter("Dat File", "dat"));
+        fc.setFileFilter(new FileNameExtensionFilter(".dat File", "dat"));
         refresh();
         frame = new JFrame("Tile Editor");
         panel1 = new JPanel() {
             public void paintComponent(Graphics g) {
                 for(int x = 0; x < xmax; x++) {
                     for(int y = 0; y < ymax; y++) {
-                        if(colormap[x * ymax + y] == 48) {
+                        if(colormap[x * ymax + y + 1] == 48) {
                             g.setColor(Color.white);
                             g.fillRect(x * pixelsize, y * pixelsize, pixelsize / 2, pixelsize / 2);
                             g.fillRect(x * pixelsize + pixelsize / 2, y * pixelsize + pixelsize / 2, pixelsize / 2, pixelsize / 2);
@@ -125,7 +130,7 @@ public class Main {
                             g.fillRect(x * pixelsize, y * pixelsize + pixelsize / 2, pixelsize / 2, pixelsize / 2);
                             g.fillRect(x * pixelsize + pixelsize / 2, y * pixelsize, pixelsize / 2, pixelsize / 2);
                         } else {
-                            g.setColor(colors[colormap[x * ymax + y]]);
+                            g.setColor(colors[colormap[x * ymax + y + 1]]);
                             g.fillRect(x * pixelsize, y * pixelsize, pixelsize, pixelsize);
                         }
                     }
@@ -142,7 +147,7 @@ public class Main {
         panel1.addMouseListener(new MouseListener() {
             public void mousePressed(MouseEvent e) {
                 try {
-                    colormap[(e.getX() / pixelsize) * ymax + (e.getY() / pixelsize)] = currentColor;
+                    colormap[(e.getX() / pixelsize) * ymax + (e.getY() / pixelsize) + 1] = currentColor;
                 } catch(Exception e1) {}
                 panel1.repaint();
             }
@@ -160,7 +165,7 @@ public class Main {
                     lastX = e.getX() / pixelsize;
                     lastY = e.getY() / pixelsize;
                     try {
-                        colormap[(e.getX() / pixelsize) * ymax + (e.getY() / pixelsize)] = currentColor;
+                        colormap[(e.getX() / pixelsize) * ymax + (e.getY() / pixelsize) + 1] = currentColor;
                     } catch(Exception e1) {}
                     panel1.repaint();
                 }
@@ -168,12 +173,10 @@ public class Main {
             
             public void mouseMoved(MouseEvent e) {}
         });
-        panel1.setPreferredSize(new Dimension(pixelsize * xmax, pixelsize * ymax));
-        JPanel panel2 = new JPanel();
+        panel2 = new JPanel();
         {
             final int len = colors.length;
             panel2.setLayout(new GridLayout(4, 16));
-            panel2.setPreferredSize(new Dimension(32 * 16, 32 * 4 + 26));
             for(int i = 0; i < 16; i++) {
                 for(int j = 0; j < 4; j++) {
                     JButton b;
@@ -197,7 +200,6 @@ public class Main {
                             currentColor = color;
                         }
                     });
-                    b.setPreferredSize(new Dimension(32, 32));
                     panel2.add(b);
                 }
             }
@@ -216,12 +218,12 @@ public class Main {
                 panel1.repaint();
             }
         });
-        JMenuItem open = new JMenuItem("Save");
-        open.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {
+        JMenuItem save = new JMenuItem("Save");
+        save.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {
             save();
         }});
-        JMenuItem save = new JMenuItem("Open");
-        save.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {
+        JMenuItem open = new JMenuItem("Open");
+        open.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {
             open();
         }});
         JMenuItem export = new JMenuItem("Export");
@@ -249,19 +251,19 @@ public class Main {
         file.add(quit);
         
         panel2.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        frame.setResizable(false);
+        //frame.setResizable(false);
         frame.getContentPane().add("North", menuBar);
         frame.getContentPane().add("Center", panel1);
         frame.getContentPane().add("South", panel2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        refreshPanels();
         frame.setVisible(true);
     }
     
     public static void refresh() {
         for(int x = 0; x < xmax; x++) {
             for(int y = 0; y < ymax; y++) {
-                colormap[x * ymax + y] = 48;
+                colormap[x * ymax + y + 1] = 48;
             }
         }
     }
@@ -276,12 +278,13 @@ public class Main {
     public static void save() {
         if(fc.showSaveDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
+                colormap[0] = (byte)xmax;
                 File f = fc.getSelectedFile();
                 String filePath = f.getAbsolutePath();
                 if(!filePath.endsWith(".dat")) {
                     f = new File(filePath + ".dat");
                 }
-                Files.write(f.toPath(), colormap);
+                Files.write(f.toPath(), compress(colormap));
             } catch(Exception e) {
                 e.printStackTrace();
             }
@@ -291,11 +294,13 @@ public class Main {
     public static void open() {
         if(fc.showOpenDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
-                colormap = Files.readAllBytes(fc.getSelectedFile().toPath());
+                colormap = decompress(Files.readAllBytes(fc.getSelectedFile().toPath()));
+                xmax = colormap[0];
+                ymax = (colormap.length - 1) / xmax;
+                refreshPanels();
             } catch(Exception e) {
                 e.printStackTrace();
             }
-            panel1.repaint();
         }
     }
     
@@ -305,7 +310,7 @@ public class Main {
                 BufferedImage b = new BufferedImage(xmax, ymax, BufferedImage.TYPE_INT_ARGB);
                 for(int i = 0; i < b.getWidth(); i++) {
                     for(int j = 0; j < b.getHeight(); j++) {
-                        b.setRGB(i, j, colors[colormap[i * b.getHeight() + j]].getRGB());
+                        b.setRGB(i, j, colors[colormap[i * b.getHeight() + j + 1]].getRGB());
                     }
                 }
                 ImageIO.write(b, "png", fc.getSelectedFile());
@@ -320,28 +325,110 @@ public class Main {
         if(fc.showOpenDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
                 BufferedImage b = ImageIO.read(fc.getSelectedFile());
+                colormap = new byte[b.getWidth()* b.getHeight() + 1];
                 for(int i = 0; i < b.getWidth(); i++) {
                     for(int j = 0; j < b.getHeight(); j++) {
-                        colormap[i * b.getHeight() + j] = (byte)indexof(b.getRGB(i, j));
+                        colormap[i * b.getHeight() + j + 1] = (byte)indexof(b.getRGB(i, j));
                     }
                 }
                 xmax = b.getWidth();
                 ymax = b.getHeight();
-                panel1.setPreferredSize(new Dimension(pixelsize * xmax, pixelsize * ymax));
-                frame.pack();
+                refreshPanels();
             } catch(Exception e) {
                 e.printStackTrace();
             }
-            panel1.repaint();
         }
     }
     
     public static int indexof(int rgb) {
-        for(int i = 0; i < colors.length; i++) {
-            if(colors[i].getRGB() == rgb) {
-                return i;
+        int closest = 99999999;
+        int id = -1;
+        final Color color = new Color(rgb);
+        final int len = colors.length;
+        int j;
+        for(int i = 0; i < len; i++) {
+            j = (int)Math.sqrt((colors[i].getRed() - color.getRed()) * (colors[i].getRed() - color.getRed())
+            + (colors[i].getGreen() - color.getGreen()) * (colors[i].getGreen() - color.getGreen())
+            + (colors[i].getBlue() - color.getBlue()) * (colors[i].getBlue() - color.getBlue()));
+            if(j < closest) {
+                closest = j;
+                id = i;
             }
+            //System.out.println("Color1: " + color + "\nColor2: " + colors[i] + "\nClosest: " + closest + "\nId: " + id + "\nJ:" + j);
         }
-        return 48;
+        return id;
     }
+    
+    public static byte[] compress(byte[] data) throws IOException {
+        Deflater deflater = new Deflater();
+        deflater.setInput(data);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        
+        deflater.finish();
+        byte[] buffer = new byte[1024];
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+        
+        return output;
+    }
+    
+    public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        while (!inflater.finished()) {
+        int count = inflater.inflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+        
+        return output;
+    }
+    
+    public static void refreshPanels() {
+        pixelsize = 500 / Math.max(xmax, ymax);
+        panel1.setPreferredSize(new Dimension(pixelsize * xmax, pixelsize * ymax));
+        panel2.setPreferredSize(new Dimension(pixelsize * xmax, pixelsize * xmax / 4 + 10));
+        frame.pack();
+        panel1.repaint();
+    }
+    
+    /*public static byte[] pack(byte[] bytes) {
+        String s = "";
+        for(byte b : bytes) {
+            s += pad(Integer.toBinaryString(b & 0xFF));
+        }
+        int n = 7 - (((s.length() % 8) + 7) % 8);
+        for(int i = 0; i < n; i++) {
+            s += "0";
+        }
+        System.out.println(s.length());
+        System.out.println(s);
+        System.out.println("~~~~~~~~~~");
+        ArrayList<Byte> arrayList = new ArrayList<>();
+        
+        for(String str : s.split("(?<=\\G.{8})")) {
+            arrayList.add((byte)Integer.parseInt(str, 2));
+        }
+        
+        n = arrayList.size();
+        byte[] out = new byte[n];
+        for(int i = 0; i < n; i++) {
+            out[i] = arrayList.get(i);
+        }
+        return out;
+    }
+    
+    public static String pad(String s) {
+        for(int i = 0; i < 6 - s.length(); i++) {
+            s = "0" + s;
+        }
+        return s;
+    }*/
 }
