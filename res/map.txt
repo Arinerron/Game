@@ -9,8 +9,8 @@ CONFIG:
 # set the spawn to third tile over, it would be 20*3, which equals 60.
 #
 background.color=black
-spawn.x=440
-spawn.y=200
+spawn.x=352
+spawn.y=160
 #
 # The configuration ends with the empty line (ex, the one below).
 

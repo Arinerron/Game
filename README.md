@@ -33,3 +33,8 @@ The allowed parameters are:
 - `<RIGHT_CLICK>` - Hold to pan view and speed walk
 - `<MIDDLE_CLICK>` - Hold to speed walk towards mouse
 - `<SHIFT>` - Slow walk
+
+# Tile Editor
+```
+sh run.sh --leveleditor
+```

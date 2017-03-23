@@ -1,3 +1,5 @@
+package game;
+
 import javax.swing.*;
 import java.util.*;
 import java.util.regex.*;
@@ -6,6 +8,9 @@ import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.imageio.*;
+import java.util.zip.*;
+import java.nio.file.*;
+import tileeditor.*;
 
 public class Game extends JPanel {
     public boolean running = false;
@@ -21,7 +26,7 @@ public class Game extends JPanel {
      * make the tick large enough to crash the game cause it is over the max int
      */
 
-    public static final int tilesize = 20; // set this to the tilesize
+    public static final int tilesize = 16; // set this to the tilesize
     public int width = tilesize * 12; // 16
     public int height = tilesize * 6; // 9
 
@@ -87,7 +92,10 @@ public class Game extends JPanel {
     public Color background = Color.BLACK;
 
     public static void main(String[] args) {
-        new Game(args);
+        if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
+            tileeditor.Main.main(args);
+        else
+            new Game(args);
     }
 
     // initialization with arguments
@@ -685,12 +693,8 @@ public class Game extends JPanel {
         // do NOT change these
         final double x = this.x;
         final double y = this.y;
-        System.out.println("this.x=" + (int)this.x + " && this.y=" + (int)this.y + " && tilex=" + tilex + " && tiley=" + tiley);
 
         for(int x2 = 0; x2 < map.length; x2++) {
-            //System.out.println(-getRealX(x2) + " > " + (this.x - tilex) + " == " + (-getRealX(x2) > this.x - tilex) +
-            //                    " && " + -getRealX(x2) + " < " + (this.x + tilex) + " == " + (-getRealX(x2) < this.x + tilex));
-            //if(-getRealX(x2) > this.x - tilex && -getRealX(x2) < this.x + tilex)
             for(int y2 = 0; y2 < map[x2].length; y2++) { // TODO: Optimize
                 char val = getTile(x2, y2);
                 Tile t = getTile(val);
@@ -701,7 +705,9 @@ public class Game extends JPanel {
                     img = t.image;
                 g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
             }
-        }g.setColor(Color.RED);g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
+        }
+        g.setColor(Color.RED);
+        g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
 
         if(this.visible) {
             BufferedImage img = this.getCharacter(character_id, tick, !jumping && moving);
@@ -785,7 +791,7 @@ public class Game extends JPanel {
 
     // gets a BufferedImage of the character from a spritesheet
     public BufferedImage getCharacter(int direction, int tick, boolean walking) {
-        final int characterwidth = 16, characterheight = 20;
+        final int characterwidth = 16, characterheight = 16;
         int i = (int)(tick / ((rate / (speed)) * 1.6)) % 4;
         return character_spritesheet.getSubimage(walking ? (i == 0 || i == 2 ? 0 : (i == 1 ? 1 : 2)) * characterwidth : 0, direction * characterheight, characterwidth, characterheight);
     }
@@ -803,15 +809,32 @@ public class Game extends JPanel {
 
     // loads a bufferedimage in by filename
     public BufferedImage getImage(String name) throws Exception {
-        BufferedImage in = ImageIO.read(new File("../res/" + name + ".png"));
+        byte[] imagedata = decompress(Files.readAllBytes(new File("../res/" + name + ".dat").toPath()));
+        int xmax = imagedata[0];
+        int ymax = (imagedata.length - 1) / xmax;
+        BufferedImage b = new BufferedImage(xmax, ymax, BufferedImage.TYPE_INT_ARGB);
+        for(int i = 0; i < xmax; i++) {
+            for(int j = 0; j < ymax; j++) {
+                //System.out.println(i + ", " + j + ", " + i * ymax + xmax);
+                b.setRGB(i, j, Colors.colors[imagedata[i * ymax + j + 1]]);
+            }
+        }
+        return b;
+    }
 
-        BufferedImage newImage = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        while (!inflater.finished()) {
+        int count = inflater.inflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
 
-        Graphics2D g = newImage.createGraphics();
-        g.drawImage(in, 0, 0, null);
-        g.dispose();
-
-        return newImage;
+        return output;
     }
 
     // loads a string in by filename
@@ -847,4 +870,76 @@ class Tile {
     public double acceleration = 0.0125;
     public boolean dither = false;
     public boolean slideover = true;
+}
+
+class Colors {
+    public static final int[] colors = new int[] {
+        0xff747474,
+        0xff24188c,
+        0xff0000a8,
+        0xff44009c,
+        0xff8c0074,
+        0xffa80010,
+        0xffa40000,
+        0xff7c0800,
+        0xff402c00,
+        0xff004400,
+        0xff005000,
+        0xff003c14,
+        0xff183c5c,
+        0xff000000,
+        0xff000000,
+        0xff000000,
+
+        0xffbcbcbc,
+        0xff0070ec,
+        0xff2038ec,
+        0xff8000f0,
+        0xffbc00bc,
+        0xffe40058,
+        0xffd82800,
+        0xffc84c0c,
+        0xffac7c00,
+        0xff009400,
+        0xff00a800,
+        0xff009038,
+        0xff008088,
+        0xff000000,
+        0xff000000,
+        0xff000000,
+
+        0xfffcfcfc,
+        0xff3cbcfc,
+        0xff5c94fc,
+        0xffcc88fc,
+        0xfff478fc,
+        0xfffc74b4,
+        0xfffc7460,
+        0xfffc9838,
+        0xfff0bc3c,
+        0xff80d010,
+        0xff4cdc48,
+        0xff58f898,
+        0xff00e8d8,
+        0xff787878,
+        0xff000000,
+        0xff000000,
+
+        0x00ffffff,
+        0xffa8e4fc,
+        0xffc4d4fc,
+        0xffd4c8fc,
+        0xfffcc4fc,
+        0xfffcc4d8,
+        0xfffcbcb0,
+        0xfffcd8a8,
+        0xfffce4a0,
+        0xffe0fca0,
+        0xffa8f0bc,
+        0xffb0fccc,
+        0xff9cfcf0,
+        0xffc4c4c4,
+        0xff000000,
+        0xff000000
+    };
 }
