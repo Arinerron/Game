@@ -7,7 +7,7 @@ sh clean.sh
 mkdir bin
 
 cd src
-javac -d ../bin/ Game.java
+javac -d ../bin/ game/Game.java
 cd ../bin
-java Game $@
+java game/Game $@
 cd ..

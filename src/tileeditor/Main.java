@@ -1,36 +1,15 @@
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.BorderFactory;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JMenuBar;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.imageio.ImageIO;
-import java.awt.GridLayout;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.File;
-import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-import java.util.zip.DataFormatException;
+package tileeditor;
+
+import javax.swing.*;
+import javax.swing.filechooser.*;
+import javax.imageio.*;
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.event.*;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.zip.*;
 
 public class Main {
     static int xmax = 16;
@@ -111,7 +90,7 @@ public class Main {
     };
     static JPanel panel1;
     static JPanel panel2;
-    
+
     public static void main(String[] args) {
         fc.setAcceptAllFileFilterUsed(true);
         fc.setMultiSelectionEnabled(false);
@@ -151,7 +130,7 @@ public class Main {
                 } catch(Exception e1) {}
                 panel1.repaint();
             }
-            
+
             public void mouseReleased(MouseEvent e) {}
             public void mouseClicked(MouseEvent e) {}
             public void mouseEntered(MouseEvent e) {}
@@ -170,7 +149,7 @@ public class Main {
                     panel1.repaint();
                 }
             }
-            
+
             public void mouseMoved(MouseEvent e) {}
         });
         panel2 = new JPanel();
@@ -196,7 +175,6 @@ public class Main {
                     }
                     b.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println(color);
                             currentColor = color;
                         }
                     });
@@ -207,9 +185,10 @@ public class Main {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         menuBar.add(file);
+        // TODO: Add undo and redo features
         //JMenu edit = new JMenu("Edit");
         //menuBar.add(edit);
-        
+
         JMenuItem newImage = new JMenuItem("New");
         newImage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -239,7 +218,7 @@ public class Main {
             saveRequest();
             System.exit(0);
         }});
-        
+
         file.add(newImage);
         file.addSeparator();
         file.add(open);
@@ -249,7 +228,7 @@ public class Main {
         file.add(import_file);
         file.addSeparator();
         file.add(quit);
-        
+
         panel2.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         //frame.setResizable(false);
         frame.getContentPane().add("North", menuBar);
@@ -259,7 +238,7 @@ public class Main {
         refreshPanels();
         frame.setVisible(true);
     }
-    
+
     public static void refresh() {
         for(int x = 0; x < xmax; x++) {
             for(int y = 0; y < ymax; y++) {
@@ -267,14 +246,14 @@ public class Main {
             }
         }
     }
-    
+
     public static void saveRequest() {
         int dialogResult = JOptionPane.showConfirmDialog(null, "Save image?", "Are you sure..?", JOptionPane.YES_NO_OPTION);
         if(dialogResult == JOptionPane.YES_OPTION){
             save();
         }
     }
-    
+
     public static void save() {
         if(fc.showSaveDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -290,7 +269,7 @@ public class Main {
             }
         }
     }
-    
+
     public static void open() {
         if(fc.showOpenDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -303,7 +282,7 @@ public class Main {
             }
         }
     }
-    
+
     public static void export() {
         if(fc.showSaveDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -319,9 +298,8 @@ public class Main {
             }
         }
     }
-    
+
     public static void import_file() {
-        System.out.println("IMPORT");
         if(fc.showOpenDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             try {
                 BufferedImage b = ImageIO.read(fc.getSelectedFile());
@@ -339,7 +317,7 @@ public class Main {
             }
         }
     }
-    
+
     public static int indexof(int rgb) {
         int closest = 99999999;
         int id = -1;
@@ -354,16 +332,15 @@ public class Main {
                 closest = j;
                 id = i;
             }
-            //System.out.println("Color1: " + color + "\nColor2: " + colors[i] + "\nClosest: " + closest + "\nId: " + id + "\nJ:" + j);
         }
         return id;
     }
-    
+
     public static byte[] compress(byte[] data) throws IOException {
         Deflater deflater = new Deflater();
         deflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        
+
         deflater.finish();
         byte[] buffer = new byte[1024];
         while (!deflater.finished()) {
@@ -372,10 +349,10 @@ public class Main {
         }
         outputStream.close();
         byte[] output = outputStream.toByteArray();
-        
+
         return output;
     }
-    
+
     public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
@@ -387,10 +364,10 @@ public class Main {
         }
         outputStream.close();
         byte[] output = outputStream.toByteArray();
-        
+
         return output;
     }
-    
+
     public static void refreshPanels() {
         pixelsize = 500 / Math.max(xmax, ymax);
         panel1.setPreferredSize(new Dimension(pixelsize * xmax, pixelsize * ymax));
@@ -398,37 +375,4 @@ public class Main {
         frame.pack();
         panel1.repaint();
     }
-    
-    /*public static byte[] pack(byte[] bytes) {
-        String s = "";
-        for(byte b : bytes) {
-            s += pad(Integer.toBinaryString(b & 0xFF));
-        }
-        int n = 7 - (((s.length() % 8) + 7) % 8);
-        for(int i = 0; i < n; i++) {
-            s += "0";
-        }
-        System.out.println(s.length());
-        System.out.println(s);
-        System.out.println("~~~~~~~~~~");
-        ArrayList<Byte> arrayList = new ArrayList<>();
-        
-        for(String str : s.split("(?<=\\G.{8})")) {
-            arrayList.add((byte)Integer.parseInt(str, 2));
-        }
-        
-        n = arrayList.size();
-        byte[] out = new byte[n];
-        for(int i = 0; i < n; i++) {
-            out[i] = arrayList.get(i);
-        }
-        return out;
-    }
-    
-    public static String pad(String s) {
-        for(int i = 0; i < 6 - s.length(); i++) {
-            s = "0" + s;
-        }
-        return s;
-    }*/
 }

@@ -1,3 +1,5 @@
+package game;
+
 import javax.swing.*;
 import java.util.*;
 import java.util.regex.*;
@@ -6,9 +8,9 @@ import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.imageio.*;
-import java.util.zip.Inflater;
-import java.util.zip.DataFormatException;
-import java.nio.file.Files;
+import java.util.zip.*;
+import java.nio.file.*;
+import tileeditor.*;
 
 public class Game extends JPanel {
     public boolean running = false;
@@ -89,78 +91,11 @@ public class Game extends JPanel {
     public double yacceleration = 0;
     public Color background = Color.BLACK;
 
-    public static final int[] colors = new int[] {
-        0xff747474,
-        0xff24188c,
-        0xff0000a8,
-        0xff44009c,
-        0xff8c0074,
-        0xffa80010,
-        0xffa40000,
-        0xff7c0800,
-        0xff402c00,
-        0xff004400,
-        0xff005000,
-        0xff003c14,
-        0xff183c5c,
-        0xff000000,
-        0xff000000,
-        0xff000000,
-
-        0xffbcbcbc,
-        0xff0070ec,
-        0xff2038ec,
-        0xff8000f0,
-        0xffbc00bc,
-        0xffe40058,
-        0xffd82800,
-        0xffc84c0c,
-        0xffac7c00,
-        0xff009400,
-        0xff00a800,
-        0xff009038,
-        0xff008088,
-        0xff000000,
-        0xff000000,
-        0xff000000,
-
-        0xfffcfcfc,
-        0xff3cbcfc,
-        0xff5c94fc,
-        0xffcc88fc,
-        0xfff478fc,
-        0xfffc74b4,
-        0xfffc7460,
-        0xfffc9838,
-        0xfff0bc3c,
-        0xff80d010,
-        0xff4cdc48,
-        0xff58f898,
-        0xff00e8d8,
-        0xff787878,
-        0xff000000,
-        0xff000000,
-
-        0x00ffffff,
-        0xffa8e4fc,
-        0xffc4d4fc,
-        0xffd4c8fc,
-        0xfffcc4fc,
-        0xfffcc4d8,
-        0xfffcbcb0,
-        0xfffcd8a8,
-        0xfffce4a0,
-        0xffe0fca0,
-        0xffa8f0bc,
-        0xffb0fccc,
-        0xff9cfcf0,
-        0xffc4c4c4,
-        0xff000000,
-        0xff000000
-    };
-
     public static void main(String[] args) {
-        new Game(args);
+        if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
+            tileeditor.Main.main(args);
+        else
+            new Game(args);
     }
 
     // initialization with arguments
@@ -881,12 +816,12 @@ public class Game extends JPanel {
         for(int i = 0; i < xmax; i++) {
             for(int j = 0; j < ymax; j++) {
                 //System.out.println(i + ", " + j + ", " + i * ymax + xmax);
-                b.setRGB(i, j, colors[imagedata[i * ymax + j + 1]]);
+                b.setRGB(i, j, Colors.colors[imagedata[i * ymax + j + 1]]);
             }
         }
         return b;
     }
-    
+
     public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
@@ -898,7 +833,7 @@ public class Game extends JPanel {
         }
         outputStream.close();
         byte[] output = outputStream.toByteArray();
-        
+
         return output;
     }
 
@@ -935,4 +870,76 @@ class Tile {
     public double acceleration = 0.0125;
     public boolean dither = false;
     public boolean slideover = true;
+}
+
+class Colors {
+    public static final int[] colors = new int[] {
+        0xff747474,
+        0xff24188c,
+        0xff0000a8,
+        0xff44009c,
+        0xff8c0074,
+        0xffa80010,
+        0xffa40000,
+        0xff7c0800,
+        0xff402c00,
+        0xff004400,
+        0xff005000,
+        0xff003c14,
+        0xff183c5c,
+        0xff000000,
+        0xff000000,
+        0xff000000,
+
+        0xffbcbcbc,
+        0xff0070ec,
+        0xff2038ec,
+        0xff8000f0,
+        0xffbc00bc,
+        0xffe40058,
+        0xffd82800,
+        0xffc84c0c,
+        0xffac7c00,
+        0xff009400,
+        0xff00a800,
+        0xff009038,
+        0xff008088,
+        0xff000000,
+        0xff000000,
+        0xff000000,
+
+        0xfffcfcfc,
+        0xff3cbcfc,
+        0xff5c94fc,
+        0xffcc88fc,
+        0xfff478fc,
+        0xfffc74b4,
+        0xfffc7460,
+        0xfffc9838,
+        0xfff0bc3c,
+        0xff80d010,
+        0xff4cdc48,
+        0xff58f898,
+        0xff00e8d8,
+        0xff787878,
+        0xff000000,
+        0xff000000,
+
+        0x00ffffff,
+        0xffa8e4fc,
+        0xffc4d4fc,
+        0xffd4c8fc,
+        0xfffcc4fc,
+        0xfffcc4d8,
+        0xfffcbcb0,
+        0xfffcd8a8,
+        0xfffce4a0,
+        0xffe0fca0,
+        0xffa8f0bc,
+        0xffb0fccc,
+        0xff9cfcf0,
+        0xffc4c4c4,
+        0xff000000,
+        0xff000000
+    };
 }
