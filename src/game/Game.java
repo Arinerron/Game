@@ -297,10 +297,12 @@ public class Game extends JPanel {
                 if(running) {
                     tick();
 
+                    boolean tilenull = tile == null;
+
                     if(!threadlocked) {
                             threadlocked = true;
                             if(jumpingenabled) {
-                            if(space && !jumping && (tile == null || tile.jump)) {
+                            if(space && !jumping && (tilenull || tile.jump)) {
                                 jumping = true;
                                 jumpingup = true;
                                 jumpboost = 0;
@@ -326,10 +328,11 @@ public class Game extends JPanel {
                             }
                         }
 
-
                         if(w || s || a || d || (middleclicked && slideover) || jumping) {
                             moving = true;
-                            if(middleclicked && slideover) {
+                            if(middleclicked && slideover && (tilenull || tile.slideover)) {
+                                System.out.println((middleclicked && slideover && (tilenull || tile.slideover)));
+                                System.out.println("..." + (tilenull || tile.slideover));
                                 if(mousex != 0 && mousey != 0) {
                                     double mousex2 = (real_width / 2) - mousex;
                                     double mousey2 = (real_height / 2) - mousey;
@@ -356,6 +359,9 @@ public class Game extends JPanel {
                             } else
                                 if(!jumping)
                                     Game.this.character_id = charId(s, d, w, a);
+
+                            if(!(tilenull || tile.slideover))
+                                middleclicked = false;
 
                             if(w) {
                                 yacceleration += acceleration;
@@ -388,7 +394,7 @@ public class Game extends JPanel {
 
                         calculateSpeed();
 
-                        if(tile != null) {
+                        if(!tilenull) {
                             acceleration = tile.acceleration;
 
                             if(tile.dangerous && !jumping) {
@@ -409,8 +415,10 @@ public class Game extends JPanel {
 
                                 Game.this.slideover = tile.slideover;
                             }
-                        } else
-                            System.out.println("null!");
+                        } else if(tick > 10) {
+                            System.out.println("null!\nnull!\nnull!\nnull!\nnull!\nnull!\nnull!\nA severe error occured.");
+                            System.exit(1);
+                        }
 
                         updateImage();
                         threadlocked = false;
