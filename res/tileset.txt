@@ -8,7 +8,7 @@
 # <char> <imagepath> [keywords]
 #
 # The image path is relative to res/ folder.
-# Do not include the file extension (always PNG).
+# Do not include the file extension (always MCI).
 # If image path is null, it won't render.
 #
 # The OPTIONAL case-insensitive keywords are:

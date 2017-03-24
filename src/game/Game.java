@@ -817,7 +817,7 @@ public class Game extends JPanel {
 
     // loads a bufferedimage in by filename
     public BufferedImage getImage(String name) throws Exception {
-        byte[] imagedata = decompress(Files.readAllBytes(new File("../res/" + name + ".dat").toPath()));
+        byte[] imagedata = decompress(Files.readAllBytes(new File("../res/" + name + ".mci").toPath()));
         int xmax = imagedata[0];
         int ymax = (imagedata.length - 1) / xmax;
         BufferedImage b = new BufferedImage(xmax, ymax, BufferedImage.TYPE_INT_ARGB);
@@ -830,6 +830,7 @@ public class Game extends JPanel {
         return b;
     }
 
+    // decompresses the data into a byte array
     public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
@@ -881,6 +882,7 @@ class Tile {
 }
 
 class Colors {
+    // all of the colors in the images
     public static final int[] colors = new int[] {
         0xff747474,
         0xff24188c,

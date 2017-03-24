@@ -94,7 +94,7 @@ public class Main {
     public static void main(String[] args) {
         fc.setAcceptAllFileFilterUsed(true);
         fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new FileNameExtensionFilter(".dat File", "dat"));
+        fc.setFileFilter(new FileNameExtensionFilter("Mooncat Compressed Image (.mci)", "mci"));
         refresh();
         frame = new JFrame("Tile Editor");
         panel1 = new JPanel() {
@@ -260,8 +260,8 @@ public class Main {
                 colormap[0] = (byte)xmax;
                 File f = fc.getSelectedFile();
                 String filePath = f.getAbsolutePath();
-                if(!filePath.endsWith(".dat")) {
-                    f = new File(filePath + ".dat");
+                if(!filePath.endsWith(".mci")) {
+                    f = new File(filePath + ".mci");
                 }
                 Files.write(f.toPath(), compress(colormap));
             } catch(Exception e) {
