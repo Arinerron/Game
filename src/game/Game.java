@@ -450,12 +450,12 @@ public class Game extends JPanel {
 
     // resets player state
     public void reset() {
-            this.x = this.spawnx;
-            this.y = this.spawny;
-            this.xacceleration = 0;
-            this.yacceleration = 0;
-            this.character_current = this.character_down;
-            this.filter = 0;
+        this.x = this.spawnx;
+        this.y = this.spawny;
+        this.xacceleration = 0;
+        this.yacceleration = 0;
+        this.character_current = this.character_down;
+        this.filter = 0;
     }
 
     // calculate what speed to travel at
