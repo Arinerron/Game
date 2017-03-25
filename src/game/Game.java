@@ -405,12 +405,18 @@ public class Game extends JPanel {
                                 if(tile.checkpoint)
                                     setSpawn(Game.this.x, Game.this.y, false);
 
-                                if(tile.slippery && !jumping) {
+                                if((tile.slippery && !jumping) || moving) { // TODO: Optimise by checking if it would collide without actually trying it
+                                    double oldx = x, oldy = y;
+                                    Tile oldt = tile;
+
                                     x += xacceleration;
                                     y += yacceleration;
-                                } else if(moving) {
-                                    x += xacceleration;
-                                    y += yacceleration;
+
+                                    if(getCurrentTile().solid) {
+                                        tile = oldt;
+                                        x = oldx;
+                                        y = oldy;
+                                    }
                                 }
 
                                 Game.this.slideover = tile.slideover;
@@ -806,13 +812,12 @@ public class Game extends JPanel {
 
     // gets a BufferedImage of the character by booleans
     public int charId(boolean down, boolean right, boolean up, boolean left) {
-        if(right != left) {
+        if(right != left)
             return right ? 1 : 3;
-        } else if(up != down) {
+        else if(up != down)
             return up ? 2 : 0;
-        } else {
+        else
             return 0;
-        }
     }
 
     // loads a bufferedimage in by filename
@@ -821,12 +826,9 @@ public class Game extends JPanel {
         int xmax = imagedata[0];
         int ymax = (imagedata.length - 1) / xmax;
         BufferedImage b = new BufferedImage(xmax, ymax, BufferedImage.TYPE_INT_ARGB);
-        for(int i = 0; i < xmax; i++) {
-            for(int j = 0; j < ymax; j++) {
-                //System.out.println(i + ", " + j + ", " + i * ymax + xmax);
+        for(int i = 0; i < xmax; i++)
+            for(int j = 0; j < ymax; j++)
                 b.setRGB(i, j, Colors.colors[imagedata[i * ymax + j + 1]]);
-            }
-        }
         return b;
     }
 
@@ -837,7 +839,7 @@ public class Game extends JPanel {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
         byte[] buffer = new byte[1024];
         while (!inflater.finished()) {
-        int count = inflater.inflate(buffer);
+            int count = inflater.inflate(buffer);
             outputStream.write(buffer, 0, count);
         }
         outputStream.close();

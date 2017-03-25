@@ -25,10 +25,10 @@ L
                     DDDDDDDDDDDDDDDC________________________________CDDDD
                     DDDDDDDDDDDDDDDC________________________________CDDDD
                     DDDDDDDDDDDDDDDC________________________________CDDDD
-                                                                    RRRRR
-                                                                    11111
-                                                                    22222
-                                                                    33333
+                            ~DD~                                    RRRRR
+                            ~DD~                                    11111
+                            ~DD~                                    22222
+                            ~DD~                                    33333
                                                                     44444
                                                                     55555
                                                                     66666
@@ -36,7 +36,7 @@ L
                                                                     88888
                                                                     99999
                                                                     00000
-                                                                    DDDDD
-                                                                    DDDDD
-                                                                    DDDDD
-                                                                    DDDDD
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDDDD~
+                            ~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDRRRRR~
+                            ~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDRRRRR~
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
