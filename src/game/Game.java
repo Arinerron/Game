@@ -92,6 +92,7 @@ public class Game extends JPanel {
     public double xacceleration = 0;
     public double yacceleration = 0;
     public Color background = Color.BLACK;
+    public Random random = new Random();
 
     public Queue<Particle> particles = new ConcurrentLinkedQueue<Particle>();
 
@@ -338,8 +339,8 @@ public class Game extends JPanel {
                         if(w || s || a || d || (middleclicked && slideover) || jumping) {
                             moving = true;
                             if(middleclicked && slideover && (tilenull || tile.slideover)) {
-                                System.out.println((middleclicked && slideover && (tilenull || tile.slideover)));
-                                System.out.println("..." + (tilenull || tile.slideover));
+                                //System.out.println((middleclicked && slideover && (tilenull || tile.slideover)));
+                                //System.out.println("..." + (tilenull || tile.slideover));
                                 if(mousex != 0 && mousey != 0) {
                                     double mousex2 = (real_width / 2) - mousex;
                                     double mousey2 = (real_height / 2) - mousey;
@@ -473,12 +474,12 @@ public class Game extends JPanel {
     public void respawn() {
         reset(); // Game game, double x, double y, Color color, int lifetime, int number
 
-        java.util.List<Particle> particles = Particle.randomlySpread(this, x, y, Color.GREEN, 5000, 20);
+        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 800, 50);
 
         for(Particle particle : particles) {
-            particle.xacceleration =  Math.random() / 10;
-            particle.yacceleration = 0.02;
-            particle.front = true;
+            particle.xacceleration =  (Math.random() - 0.5) / 50;
+            particle.yacceleration = (Math.random() - 0.5) / 50;
+            particle.front = random.nextBoolean();
 
             this.particles.add(particle);
         }
@@ -757,7 +758,8 @@ public class Game extends JPanel {
         for(Particle particle : particles)
             if(!particle.front) {
                 g.setColor(particle.color);
-                g.fillRect((int)particle.x - 200, (int)particle.y - 200, (int)particle.x + 200, (int)particle.y + 200);
+                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
+                g.drawLine(px, py, px, py);
             }
 
         // draw the player
@@ -772,9 +774,8 @@ public class Game extends JPanel {
         for(Particle particle : particles)
             if(particle.front) {
                 g.setColor(particle.color);
-                g.drawLine((int)(particle.x + x + mx), (int)(particle.y + y + my), (int)(particle.x), (int)(particle.y));
-                System.out.println("x:" + (int)x + " r:" + (int)(tilex - tilesize + mx) + " & y:" + (int)particle.x);
-                //System.exit(0);
+                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
+                g.drawLine(px, py, px, py);
             }
 
         // draw the filter on top of everything
@@ -974,11 +975,16 @@ class Particle {
 
     // spread particles around point
     public static java.util.List<Particle> randomlySpread(Game game, double x, double y, Color color, int lifetime, int number) {
+        // range is the distance around the given point to scatter
+        final double range = 6;
+
         java.util.List<Particle> particles = new java.util.ArrayList<>();
         Random r = new Random();
 
-        double xmin = x - game.half, xmax = x + game.half,
-                ymin = y - game.half, ymax = y + game.half;
+        double half = (double)(range / 2);
+
+        double xmin = x - game.half + half, xmax = x + game.half - half,
+                ymin = y - game.half + half, ymax = y + game.half - half;
 
         for(int i = 0; i < number; i++) {
             Particle particle = new Particle(game, xmin + (xmax - xmin) * r.nextDouble(),
