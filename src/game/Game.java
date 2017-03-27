@@ -29,6 +29,7 @@ public class Game extends JPanel {
     public static final int tilesize = 16; // set this to the tilesize
     public int width = tilesize * 12; // 16
     public int height = tilesize * 6; // 9
+    final int characterwidth = 16, characterheight = 16; // size of character
 
     public final int half = (int)(tilesize / 2);
     public int real_width = 0;
@@ -405,18 +406,26 @@ public class Game extends JPanel {
                                 if(tile.checkpoint)
                                     setSpawn(Game.this.x, Game.this.y, false);
 
+                                // collision detection
                                 if((tile.slippery && !jumping) || moving) { // TODO: Optimise by checking if it would collide without actually trying it
                                     double oldx = x, oldy = y;
-                                    Tile oldt = tile;
+                                    double spacing = (double)(tilesize - (double)(characterwidth / 5));
+
+                                    // System.out.println(spacing + " " + tilesize + " " + characterwidth);spacing = 8;
 
                                     x += xacceleration;
-                                    y += yacceleration;
+                                    Tile current1 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
+                                    Tile current2 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
 
-                                    if(getCurrentTile().solid) {
-                                        tile = oldt;
+                                    if(current1.solid || current2.solid)
                                         x = oldx;
+
+                                    y += yacceleration;
+                                    current1 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
+                                    current2 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
+
+                                    if(current1.solid || current2.solid)
                                         y = oldy;
-                                    }
                                 }
 
                                 Game.this.slideover = tile.slideover;
@@ -805,7 +814,6 @@ public class Game extends JPanel {
 
     // gets a BufferedImage of the character from a spritesheet
     public BufferedImage getCharacter(int direction, int tick, boolean walking) {
-        final int characterwidth = 16, characterheight = 16;
         int i = (int)(tick / ((rate / (speed)) * 1.6)) % 4;
         return character_spritesheet.getSubimage(walking ? (i == 0 || i == 2 ? 0 : (i == 1 ? 1 : 2)) * characterwidth : 0, direction * characterheight, characterwidth, characterheight);
     }
@@ -882,6 +890,8 @@ class Tile {
     public boolean dither = false;
     public boolean slideover = true;
 }
+
+
 
 class Colors {
     // all of the colors in the images
