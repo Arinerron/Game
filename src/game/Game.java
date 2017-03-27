@@ -2,14 +2,15 @@ package game;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.zip.*;
 import java.util.regex.*;
+import java.util.concurrent.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
-import javax.imageio.*;
-import java.util.zip.*;
 import java.nio.file.*;
+import javax.imageio.*;
 import tileeditor.*;
 
 public class Game extends JPanel {
@@ -19,7 +20,7 @@ public class Game extends JPanel {
 
     public boolean slideover = true;
     public boolean eightbit = false;
-    public int rate = 5; // tick is every 5 milis
+    public static int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
     /*
      * interesting fact: it would take 4 months and 2 weeks for the tick to
@@ -91,6 +92,8 @@ public class Game extends JPanel {
     public double xacceleration = 0;
     public double yacceleration = 0;
     public Color background = Color.BLACK;
+
+    public Queue<Particle> particles = new ConcurrentLinkedQueue<Particle>();
 
     public static void main(String[] args) {
         if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
@@ -167,7 +170,7 @@ public class Game extends JPanel {
                 } else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
                     System.exit(0);
                 else if(e.getKeyCode() == KeyEvent.VK_R) {
-                    reset();
+                    respawn();
                 } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = true;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
@@ -297,6 +300,9 @@ public class Game extends JPanel {
             public void run() {
                 if(running) {
                     tick();
+
+                    for(Particle particle : particles)
+                        particle.tick();
 
                     boolean tilenull = tile == null;
 
@@ -460,7 +466,22 @@ public class Game extends JPanel {
 
     // kills the player
     public void kill() {
-        reset();
+        respawn();
+    }
+
+    // reset and particles around player
+    public void respawn() {
+        reset(); // Game game, double x, double y, Color color, int lifetime, int number
+
+        java.util.List<Particle> particles = Particle.randomlySpread(this, x, y, Color.GREEN, 5000, 20);
+
+        for(Particle particle : particles) {
+            particle.xacceleration =  Math.random() / 10;
+            particle.yacceleration = 0.02;
+            particle.front = true;
+
+            this.particles.add(particle);
+        }
     }
 
     // resets player state
@@ -732,6 +753,14 @@ public class Game extends JPanel {
         g.setColor(Color.RED);
         g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
 
+        // draw particles that are in back
+        for(Particle particle : particles)
+            if(!particle.front) {
+                g.setColor(particle.color);
+                g.fillRect((int)particle.x - 200, (int)particle.y - 200, (int)particle.x + 200, (int)particle.y + 200);
+            }
+
+        // draw the player
         if(this.visible) {
             BufferedImage img = this.getCharacter(character_id, tick, !jumping && moving);
             g.drawImage(img, tilex - tilesize + mx,
@@ -739,11 +768,22 @@ public class Game extends JPanel {
                 img.getWidth(), img.getHeight(), null);
         }
 
+        // draw particles that are in front
+        for(Particle particle : particles)
+            if(particle.front) {
+                g.setColor(particle.color);
+                g.drawLine((int)(particle.x + x + mx), (int)(particle.y + y + my), (int)(particle.x), (int)(particle.y));
+                System.out.println("x:" + (int)x + " r:" + (int)(tilex - tilesize + mx) + " & y:" + (int)particle.x);
+                //System.exit(0);
+            }
+
+        // draw the filter on top of everything
         if(filter != 0) {
             g.setColor(new Color(0, 0, 0, filter));
             g.fillRect(0, 0, image.getWidth(), image.getHeight());
         }
 
+        // set the new image
         g.dispose();
         this.setImage(image);
     }
@@ -891,7 +931,67 @@ class Tile {
     public boolean slideover = true;
 }
 
+class Particle {
+    public Game game = null;
+    public double originx = 0;
+    public double originy = 0;
+    public double x = 0;
+    public double y = 0;
+    public double xacceleration = 0;
+    public double yacceleration = 0;
+    public Color color = Color.BLUE;
+    public int lifetime = 1000;
+    public int life = 0;
+    public boolean front = true;
 
+    // initialize particle
+    public Particle(Game game, double x, double y) {
+        this.game = game;
+        this.x = Math.abs(x);
+        this.y = Math.abs(y);
+        this.originx = this.x;
+        this.originy = this.y;
+    }
+
+    // next tick
+    public void tick() {
+        if(life >= lifetime)
+            this.destroy();
+        x += xacceleration;
+        y += yacceleration;
+        life++;
+    }
+
+    // destroy particle
+    public void destroy() {
+        game.particles.remove(this);
+    }
+
+    // convert seconds to ticks
+    public static int secondsToTicks(double seconds) { // TODO: move to Game class
+        return (int)((double)((double)(seconds * 1000) / Game.rate));
+    }
+
+    // spread particles around point
+    public static java.util.List<Particle> randomlySpread(Game game, double x, double y, Color color, int lifetime, int number) {
+        java.util.List<Particle> particles = new java.util.ArrayList<>();
+        Random r = new Random();
+
+        double xmin = x - game.half, xmax = x + game.half,
+                ymin = y - game.half, ymax = y + game.half;
+
+        for(int i = 0; i < number; i++) {
+            Particle particle = new Particle(game, xmin + (xmax - xmin) * r.nextDouble(),
+                                ymin + (ymax - ymin) * r.nextDouble());
+
+            particle.color = color;
+            particle.lifetime = lifetime;
+            particles.add(particle);
+        }
+
+        return particles;
+    }
+}
 
 class Colors {
     // all of the colors in the images
