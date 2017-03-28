@@ -14,13 +14,13 @@ sh run.sh
 
 Or, you can optionally add space-separated parameters, like:
 ```
-sh run.sh pan=false jump=true 8bit=true
+sh run.sh --nopan --jump --dither
 ```
 
 The allowed parameters are:
-- `jump` - Enable jumping? Can be `true` or `false`
-- `pan` - Enable panning? Can be `true` or `false`
-- `8bit` - Force 8-bit colors? Can be `true` or `false`
+- `-d/--dither` - Force 8bit colors & enable dithering?
+- `-p/--nopan` - Disable panning?
+- `-j/--jump` - Enable jumping?
 
 # Controls
 - `W` - Move up

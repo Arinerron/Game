@@ -110,14 +110,17 @@ public class Game extends JPanel {
             String[] split = arg.split(Pattern.quote("=")); // TODO: just split on the first =
             try {
                 switch(split[0].toLowerCase()) { // TODO: Error handling
-                    case "jump":
-                        this.jumpingenabled = Boolean.parseBoolean(split[1]);
+                    case "-j":
+                    case "--jump":
+                        this.jumpingenabled = true;
                         break;
-                    case "8bit":
-                        eightbit = Boolean.parseBoolean(split[1]);
+                    case "-d";
+                    case "--dither":
+                        eightbit = true;
                         break;
-                    case "pan":
-                        slideover = Boolean.parseBoolean(split[1]);
+                    case "-p":
+                    case "--nopan":
+                        slideover = false;
                         break;
                     default:
                         System.out.println("Unknown parameter \"" + split[0] + "\" for game arguments.");
