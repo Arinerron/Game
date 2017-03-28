@@ -17,7 +17,7 @@ public class Main {
     static int pixelsize = 16;
     static byte[] colormap = new byte[xmax * ymax + 1];
     static byte currentColor = 0;
-    static final JFileChooser fc = new JFileChooser(new File("."));
+    static final JFileChooser fc = new JFileChooser(new File("../res/"));
     static JFrame frame;
     static Color[] colors = new Color[] {
         new Color(0x747474),

@@ -21,6 +21,7 @@ The allowed parameters are:
 - `-d/--dither` - Force 8bit colors & enable dithering?
 - `-p/--nopan` - Disable panning?
 - `-j/--jump` - Enable jumping?
+- `-e/--tileeditor` - Launch tile editor instead of game?
 
 # Controls
 - `W` - Move up
@@ -36,5 +37,5 @@ The allowed parameters are:
 
 # Tile Editor
 ```
-sh run.sh --leveleditor
+sh run.sh --tileeditor
 ```
