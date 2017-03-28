@@ -305,9 +305,9 @@ public class Game extends JPanel {
                     for(Particle particle : particles)
                         particle.tick();
 
-                    boolean tilenull = tile == null;
-
                     if(!threadlocked) {
+                            boolean tilenull = tile == null;
+
                             threadlocked = true;
                             if(jumpingenabled) {
                             if(space && !jumping && (tilenull || tile.jump)) {
@@ -437,11 +437,22 @@ public class Game extends JPanel {
 
                                 Game.this.slideover = tile.slideover;
                             }
+
+                            if(tile.particle && tick % tile.particle_iteration == 0) {
+                                java.util.List<Particle> particles2 = Particle.randomlySpread(Game.this, x + half, y + half, tile.particle_color, tile.particle_lifetime, tile.particle_count);
+
+                                for(Particle particle : particles2) {
+                                    particle.xacceleration =  tile.particle_xacceleration;
+                                    particle.yacceleration = tile.particle_yacceleration;
+                                    particle.front = tile.particle_front;
+
+                                    particles.add(particle);
+                                }
+                            }
                         } else if(tick > 10) {
                             System.out.println("null!\nnull!\nnull!\nnull!\nnull!\nnull!\nnull!\nA severe error occured.");
                             System.exit(1);
                         }
-
                         updateImage();
                         threadlocked = false;
                     }
@@ -751,6 +762,7 @@ public class Game extends JPanel {
                                             } catch(Exception e) {
                                                 System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
                                                 System.err.println(e.toString());
+                                                e.printStackTrace();
                                             }
                                         }
                                         break;
