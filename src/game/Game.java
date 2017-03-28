@@ -856,8 +856,6 @@ public class Game extends JPanel {
                 g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
             }
         }
-        g.setColor(Color.RED);
-        g.fillRect((int)(this.x), (int)(this.y), (int)(this.x + tilex), (int)(this.y + tiley));
 
         // draw particles that are in back
         for(Particle particle : particles)
