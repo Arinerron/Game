@@ -114,7 +114,7 @@ public class Game extends JPanel {
                     case "--jump":
                         this.jumpingenabled = true;
                         break;
-                    case "-d";
+                    case "-d":
                     case "--dither":
                         eightbit = true;
                         break;
@@ -173,9 +173,7 @@ public class Game extends JPanel {
                     character_current = character_left;
                 } else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
                     System.exit(0);
-                else if(e.getKeyCode() == KeyEvent.VK_R) {
-                    respawn();
-                } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
                     space = true;
                 } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     shift = true;
@@ -203,6 +201,9 @@ public class Game extends JPanel {
                     space = false;
                 else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
                     shift = false;
+                else if(e.getKeyCode() == KeyEvent.VK_R) {
+                    respawn();
+                }
                 else if(e.getKeyCode() == KeyEvent.VK_B)
                     eightbit = !eightbit;
             }
