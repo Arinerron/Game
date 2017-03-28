@@ -27,6 +27,15 @@
 # - replace=<char> - Replaces tile with char
 # - speed=<double> - Sets the speed while on tile
 # - filter=<int> - Sets the percent darkness to apply
+# - particle={...} - Create particles when player touches tile; parameters are comma-separated; no spaces allowed in parameters
+#   - Please note that the string "[min|max]" will be replaced with a random double from min to max on game init; ex. [0.1|1]
+#   - color:<string> - Sets the color of the particle
+#   - count:<int> - Number of particles to create every `iteration` ticks
+#   - iteration:<int> - create `count` particles every `iteration` ticks
+#   - lifetime:<int/string> - how long particles last. Ex. 5=5 ticks, 1.4s=1.4 seconds
+#   - xacceleration:<double> - how much to accelerate every tick on the x axis
+#   - yacceleration:<double> - how much to accelerate every tick on the y axis
+#   - front:<boolean> - if true, particles render on top of players; else behind
 
 # Default tiles
 ? tiles/null solid nojump
@@ -35,7 +44,7 @@ D tiles/dirt
 . tiles/water speed=0.2 nojump
 L tiles/lava fluid nojump dangerous default
 C tiles/dirt checkpoint
-_ tiles/ice speed=0.4 acceleration=0.0008 nojump slippery
+_ tiles/ice speed=0.4 acceleration=0.0008 nojump slippery particle={color:blue,count:10,iteration:5,lifetime:1s,front:true,xacceleration:[0.01|0.02],yacceleration:[0.01|0.02]}
 G tiles/gravel acceleration=0.1 speed=0.5
 ~ tiles/test solid
 

@@ -8,7 +8,7 @@ CONFIG:
 # Note that the coordinates MUST be integers. A tile is 20x20, so if you want to
 # set the spawn to third tile over, it would be 20*3, which equals 60.
 #
-background.color=black
+background.color=#000000
 spawn.x=352
 spawn.y=160
 #

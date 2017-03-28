@@ -20,7 +20,7 @@ public class Game extends JPanel {
 
     public boolean slideover = true;
     public boolean eightbit = false;
-    public static int rate = 5; // tick is every 5 milis
+    public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
     /*
      * interesting fact: it would take 4 months and 2 weeks for the tick to
@@ -474,7 +474,7 @@ public class Game extends JPanel {
     public void respawn() {
         reset(); // Game game, double x, double y, Color color, int lifetime, int number
 
-        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 800, 50);
+        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 800, 75);
 
         for(Particle particle : particles) {
             particle.xacceleration =  (Math.random() - 0.5) / 50;
@@ -556,13 +556,18 @@ public class Game extends JPanel {
             String[] cfg = file.substring(0, file.indexOf("\n\n")).split(Pattern.quote("\n"));
             for(String line : cfg) {
                 if(!line.startsWith("CONFIG:") && !line.startsWith("#")) {
-                    String[] pair = line.split(Pattern.quote("="));
-                    String key = pair[0];
-                    String val = pair[1];
+                    String current = line;
+                    String key = current;
+                    String val = current;
+                    if(current.contains("=")) {
+                        int first = current.indexOf("=");
+                        key = current.substring(0, first);
+                        val = current.substring(first + 1);
+                    }
 
                     switch(key.toLowerCase()) {
                         case "background.color":
-                            this.background = (Color) Color.class.getField(val.toLowerCase()).get(null);
+                            this.background = Color.decode(val);
                             break;
                         case "spawn.x":
                             this.setSpawn(-Integer.parseInt(val), this.spawny, true);
@@ -634,8 +639,14 @@ public class Game extends JPanel {
                                     tile.image = getImage(split[i]);
                                 break;
                             default: // otherwise, it is one of the optional parameters
-                                String[] pair = split[i].split(Pattern.quote("="));
-                                String key = pair[0];
+                                String current = split[i];
+                                String key = current;
+                                String val = current;
+                                if(current.contains("=")) {
+                                    int first = current.indexOf("=");
+                                    key = current.substring(0, first);
+                                    val = current.substring(first + 1);
+                                }
 
                                 switch(key.toLowerCase()) {
                                     case "fluid":
@@ -654,20 +665,20 @@ public class Game extends JPanel {
                                         tile.slippery = false;
                                         break;
                                     case "filter":
-                                        tile.filter = (int)((Double.parseDouble(pair[1])) * 2.54);
+                                        tile.filter = (int)((Double.parseDouble(val)) * 2.54);
                                         tile.filterset = true;
                                         break;
                                     case "safe":
                                         tile.dangerous = false;
                                         break;
                                     case "replace":
-                                        tile.replace = pair[1].charAt(0);
+                                        tile.replace = val.charAt(0);
                                         break;
                                     case "speed":
-                                        tile.speed = Double.parseDouble(pair[1]);
+                                        tile.speed = Double.parseDouble(val);
                                         break;
                                     case "acceleration":
-                                        tile.acceleration = Double.parseDouble(pair[1]);
+                                        tile.acceleration = Double.parseDouble(val);
                                         break;
                                     case "spawn":
                                         tile.spawn = true;
@@ -690,6 +701,59 @@ public class Game extends JPanel {
                                     case "unlock":
                                         tile.slideover = true;
                                         break;
+                                    case "particle": {
+                                            try {
+                                                tile.particle = true;
+
+                                                if(val.contains("=")) {
+                                                    System.out.println("Warning: Particle string for tile \"" + tile.character + "\" appears to be using character \"=\" rather than \":\". Attempting to parse...");
+                                                    val = val.replaceAll(Pattern.quote("="), ":");
+                                                }
+
+                                                String[] pairs = val.substring(val.indexOf('{') + 1, val.indexOf('}')).split(Pattern.quote(","));
+                                                for(String pair : pairs) {
+                                                    String[] parameter = pair.split(Pattern.quote(":"));
+                                                    String pkey = parameter[0].toLowerCase();
+                                                    String pval = parameter[1].toLowerCase();
+
+                                                    pval = replaceBrackets(pval);
+
+                                                    switch(pkey) {
+                                                        case "color":
+                                                            tile.particle_color = Color.decode(pval);
+                                                            break;
+                                                        case "count":
+                                                            tile.particle_count = Integer.parseInt(pval);
+                                                            break;
+                                                        case "iteration":
+                                                            tile.particle_iteration = Integer.parseInt(pval);
+                                                            break;
+                                                        case "lifetime":
+                                                            if(pval.endsWith("s"))
+                                                                tile.particle_lifetime = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                            else
+                                                                tile.particle_lifetime = Integer.parseInt(pval);
+                                                            break;
+                                                        case "front":
+                                                            tile.particle_front = Boolean.parseBoolean(pval);
+                                                            break;
+                                                        case "xacceleration":
+                                                            tile.particle_xacceleration = Double.parseDouble(pval);
+                                                            break;
+                                                        case "yacceleration":
+                                                            tile.particle_yacceleration = Double.parseDouble(pval);
+                                                            break;
+                                                        default:
+                                                            System.out.println("Unknown parameter \"" + pkey + "\" for particle string for tile \"" + tile.character + "\"");
+                                                            break;
+                                                    }
+                                                }
+                                            } catch(Exception e) {
+                                                System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
+                                                System.err.println(e.toString());
+                                            }
+                                        }
+                                        break;
                                     case "default":
                                         tile.defaultchar = true;
                                         defaultchar = tile.character;
@@ -708,6 +772,35 @@ public class Game extends JPanel {
         }
 
         this.tiles = tiles;
+    }
+
+    // convert a string like "[0.01-0.4]" to a random double between the range
+    public String replaceBrackets(String original) {
+        if(original.contains("[")) {
+            StringBuilder b = new StringBuilder();
+
+            int open = original.indexOf("[");
+            int close = original.indexOf("]");
+
+            b.append(original.substring(0, open));
+            String[] parse = original.substring(open + 1, close).split(Pattern.quote("|"));
+            b.append(random(Double.parseDouble(parse[0]), Double.parseDouble(parse[1])));
+            b.append(original.substring(close + 1));
+
+            return b.toString();
+        }
+
+        return original;
+    }
+
+    // generate a random double between a range
+    public double random(double min, double max) {
+        return min + (max - min) * random.nextDouble();
+    }
+
+    // generate a random boolean
+    public boolean random() {
+        return random.nextBoolean();
     }
 
     // next tick
@@ -911,6 +1004,11 @@ public class Game extends JPanel {
             scanner.close();
         }
     }
+
+    // convert seconds to ticks
+    public int secondsToTicks(double seconds) { // TODO: move to Game class
+        return (int)((double)((double)(seconds * 1000) / rate));
+    }
 }
 
 class Tile {
@@ -930,6 +1028,15 @@ class Tile {
     public double acceleration = 0.0125;
     public boolean dither = false;
     public boolean slideover = true;
+
+    public boolean particle = false;
+    public Color particle_color = Color.BLUE;
+    public int particle_count = 1;
+    public int particle_iteration = 1;
+    public int particle_lifetime = 1000;
+    public double particle_xacceleration = 0.01;
+    public double particle_yacceleration = 0.01;
+    public boolean particle_front = true;
 }
 
 class Particle {
@@ -966,11 +1073,6 @@ class Particle {
     // destroy particle
     public void destroy() {
         game.particles.remove(this);
-    }
-
-    // convert seconds to ticks
-    public static int secondsToTicks(double seconds) { // TODO: move to Game class
-        return (int)((double)((double)(seconds * 1000) / Game.rate));
     }
 
     // spread particles around point
