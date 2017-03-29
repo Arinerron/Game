@@ -11,7 +11,13 @@
 # Do not include the file extension (always MCI).
 # If image path is null, it won't render.
 #
-# The OPTIONAL case-insensitive keywords are:
+# All lines after the string "[tiles]" until the
+# next keyword will be considered tile configuration.
+# All lines after the string "[entities]" until the
+# next keyword (if any) will be considered entity
+# configuration.
+#
+# The OPTIONAL case-insensitive keywords for [tiles] are:
 # - solid - The character can't walk through tile
 # - fluid - The character can walk through tile
 # - dangerous - Kills the character on touch
@@ -38,6 +44,8 @@
 #   - front:<boolean> - if true, particles render on top of players; else behind
 # - animation={...} - Animate the tile. First parameter is a number/string how many ticks/seconds to wait before next image. Next params are the images
 
+[tiles]
+
 # Default tiles
 ? tiles/null solid nojump
 S null spawn replace=tiles/dirt
@@ -61,3 +69,7 @@ R tiles/dirt speed=0.5 filter=0
 8 tiles/dirt speed=0.15 filter=80 lock
 9 tiles/dirt speed=0.1 filter=90 lock
 0 tiles/dirt speed=0.05 filter=100 lock
+
+[entities]
+
+# Default entities

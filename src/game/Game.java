@@ -95,6 +95,7 @@ public class Game extends JPanel {
     public Random random = new Random();
 
     public Queue<Particle> particles = new ConcurrentLinkedQueue<Particle>();
+    public Queue<Entity> entities = new ConcurrentLinkedQueue<Entity>();
 
     public static void main(String[] args) {
         if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
@@ -645,190 +646,199 @@ public class Game extends JPanel {
     public void loadTileset(String name) throws Exception {
         String[] lines = getString(name).split(Pattern.quote("\n"));
         java.util.List<Tile> tiles = new java.util.ArrayList<>();
+        int type = 0; // 0=tile, 1=entity
 
         for(String line : lines) {
             if(!line.startsWith("#") && line.length() != 0) {
-                String[] split = line.split(Pattern.quote(" "));
-                Tile tile = new Tile();
+                if(line.toLowerCase().startsWith("[tiles]"))
+                    type = 0;
+                else if(line.toLowerCase().startsWith("[entities]"))
+                    type = 1;
+                else if(type == 0) {
+                    String[] split = line.split(Pattern.quote(" "));
+                    Tile tile = new Tile();
 
-                for(int i = 0; i < split.length; i++) {
-                    if(split[i].length() != 0) // make sure the parameter isn't empty
-                        switch(i) {
-                            case 0: // if it is the first parameter on the line
-                                tile.character = split[i].charAt(0);
-                                break;
-                            case 1: // if it is the second
-                                if(split[i].equalsIgnoreCase("null"))
-                                    tile.image = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
-                                else
-                                    tile.image = getImage(split[i]);
-                                break;
-                            default: // otherwise, it is one of the optional parameters
-                                String current = split[i];
-                                String key = current;
-                                String val = current;
-                                if(current.contains("=")) {
-                                    int first = current.indexOf("=");
-                                    key = current.substring(0, first);
-                                    val = current.substring(first + 1);
-                                }
+                    for(int i = 0; i < split.length; i++) {
+                        if(split[i].length() != 0) // make sure the parameter isn't empty
+                            switch(i) {
+                                case 0: // if it is the first parameter on the line
+                                    tile.character = split[i].charAt(0);
+                                    break;
+                                case 1: // if it is the second
+                                    if(split[i].equalsIgnoreCase("null"))
+                                        tile.image = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
+                                    else
+                                        tile.image = getImage(split[i]);
+                                    break;
+                                default: // otherwise, it is one of the optional parameters
+                                    String current = split[i];
+                                    String key = current;
+                                    String val = current;
+                                    if(current.contains("=")) {
+                                        int first = current.indexOf("=");
+                                        key = current.substring(0, first);
+                                        val = current.substring(first + 1);
+                                    }
 
-                                switch(key.toLowerCase()) {
-                                    case "fluid":
-                                        tile.solid = false;
-                                        break;
-                                    case "solid":
-                                        tile.solid = true;
-                                        break;
-                                    case "dangerous":
-                                        tile.dangerous = true;
-                                        break;
-                                    case "slippery":
-                                        tile.slippery = true;
-                                        break;
-                                    case "sticky":
-                                        tile.slippery = false;
-                                        break;
-                                    case "filter":
-                                        tile.filter = (int)((Double.parseDouble(val)) * 2.54);
-                                        tile.filterset = true;
-                                        break;
-                                    case "safe":
-                                        tile.dangerous = false;
-                                        break;
-                                    case "replace":
-                                        tile.replace = val.charAt(0);
-                                        break;
-                                    case "speed":
-                                        tile.speed = Double.parseDouble(val);
-                                        break;
-                                    case "acceleration":
-                                        tile.acceleration = Double.parseDouble(val);
-                                        break;
-                                    case "spawn":
-                                        tile.spawn = true;
-                                        break;
-                                    case "checkpoint":
-                                        tile.checkpoint = true;
-                                        break;
-                                    case "nojump":
-                                        tile.jump = false;
-                                        break;
-                                    case "jump":
-                                        tile.jump = true;
-                                        break;
-                                    case "dither":
-                                        tile.dither = true;
-                                        break;
-                                    case "lock":
-                                        tile.slideover = false;
-                                        break;
-                                    case "unlock":
-                                        tile.slideover = true;
-                                        break;
-                                    case "particle": {
-                                            try {
-                                                tile.particle = true;
+                                    switch(key.toLowerCase()) {
+                                        case "fluid":
+                                            tile.solid = false;
+                                            break;
+                                        case "solid":
+                                            tile.solid = true;
+                                            break;
+                                        case "dangerous":
+                                            tile.dangerous = true;
+                                            break;
+                                        case "slippery":
+                                            tile.slippery = true;
+                                            break;
+                                        case "sticky":
+                                            tile.slippery = false;
+                                            break;
+                                        case "filter":
+                                            tile.filter = (int)((Double.parseDouble(val)) * 2.54);
+                                            tile.filterset = true;
+                                            break;
+                                        case "safe":
+                                            tile.dangerous = false;
+                                            break;
+                                        case "replace":
+                                            tile.replace = val.charAt(0);
+                                            break;
+                                        case "speed":
+                                            tile.speed = Double.parseDouble(val);
+                                            break;
+                                        case "acceleration":
+                                            tile.acceleration = Double.parseDouble(val);
+                                            break;
+                                        case "spawn":
+                                            tile.spawn = true;
+                                            break;
+                                        case "checkpoint":
+                                            tile.checkpoint = true;
+                                            break;
+                                        case "nojump":
+                                            tile.jump = false;
+                                            break;
+                                        case "jump":
+                                            tile.jump = true;
+                                            break;
+                                        case "dither":
+                                            tile.dither = true;
+                                            break;
+                                        case "lock":
+                                            tile.slideover = false;
+                                            break;
+                                        case "unlock":
+                                            tile.slideover = true;
+                                            break;
+                                        case "particle": {
+                                                try {
+                                                    tile.particle = true;
 
-                                                if(val.contains("=")) {
-                                                    System.out.println("Warning: Particle string for tile \"" + tile.character + "\" appears to be using character \"=\" rather than \":\". Attempting to parse...");
-                                                    val = val.replaceAll(Pattern.quote("="), ":");
-                                                }
-
-                                                String[] pairs = val.substring(val.indexOf('{') + 1, val.indexOf('}')).split(Pattern.quote(","));
-                                                for(String pair : pairs) {
-                                                    String[] parameter = pair.split(Pattern.quote(":"));
-                                                    String pkey = parameter[0].toLowerCase();
-                                                    String pval = parameter[1].toLowerCase();
-
-                                                    pval = replaceBrackets(pval);
-
-                                                    switch(pkey) {
-                                                        case "color":
-                                                            tile.particle_color = Color.decode(pval);
-                                                            break;
-                                                        case "count":
-                                                            tile.particle_count = Integer.parseInt(pval);
-                                                            break;
-                                                        case "iteration":
-                                                            if(pval.endsWith("s"))
-                                                                tile.particle_iteration = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
-                                                            else
-                                                                tile.particle_iteration = Integer.parseInt(pval);
-                                                            break;
-                                                        case "lifetime":
-                                                            if(pval.endsWith("s"))
-                                                                tile.particle_lifetime = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
-                                                            else
-                                                                tile.particle_lifetime = Integer.parseInt(pval);
-                                                            break;
-                                                        case "front":
-                                                            tile.particle_front = Boolean.parseBoolean(pval);
-                                                            break;
-                                                        case "xacceleration":
-                                                            tile.particle_xacceleration = Double.parseDouble(pval);
-                                                            break;
-                                                        case "yacceleration":
-                                                            tile.particle_yacceleration = Double.parseDouble(pval);
-                                                            break;
-                                                        default:
-                                                            System.out.println("Unknown parameter \"" + pkey + "\" for particle string for tile \"" + tile.character + "\"");
-                                                            break;
+                                                    if(val.contains("=")) {
+                                                        System.out.println("Warning: Particle string for tile \"" + tile.character + "\" appears to be using character \"=\" rather than \":\". Attempting to parse...");
+                                                        val = val.replaceAll(Pattern.quote("="), ":");
                                                     }
+
+                                                    String[] pairs = val.substring(val.indexOf('{') + 1, val.indexOf('}')).split(Pattern.quote(","));
+                                                    for(String pair : pairs) {
+                                                        String[] parameter = pair.split(Pattern.quote(":"));
+                                                        String pkey = parameter[0].toLowerCase();
+                                                        String pval = parameter[1].toLowerCase();
+
+                                                        pval = replaceBrackets(pval);
+
+                                                        switch(pkey) {
+                                                            case "color":
+                                                                tile.particle_color = Color.decode(pval);
+                                                                break;
+                                                            case "count":
+                                                                tile.particle_count = Integer.parseInt(pval);
+                                                                break;
+                                                            case "iteration":
+                                                                if(pval.endsWith("s"))
+                                                                    tile.particle_iteration = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                                else
+                                                                    tile.particle_iteration = Integer.parseInt(pval);
+                                                                break;
+                                                            case "lifetime":
+                                                                if(pval.endsWith("s"))
+                                                                    tile.particle_lifetime = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                                else
+                                                                    tile.particle_lifetime = Integer.parseInt(pval);
+                                                                break;
+                                                            case "front":
+                                                                tile.particle_front = Boolean.parseBoolean(pval);
+                                                                break;
+                                                            case "xacceleration":
+                                                                tile.particle_xacceleration = Double.parseDouble(pval);
+                                                                break;
+                                                            case "yacceleration":
+                                                                tile.particle_yacceleration = Double.parseDouble(pval);
+                                                                break;
+                                                            default:
+                                                                System.out.println("Unknown parameter \"" + pkey + "\" for particle string for tile \"" + tile.character + "\"");
+                                                                break;
+                                                        }
+                                                    }
+                                                } catch(Exception e) {
+                                                    System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
+                                                    System.err.println(e.toString());
+                                                    //e.printStackTrace();
                                                 }
-                                            } catch(Exception e) {
-                                                System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
-                                                System.err.println(e.toString());
-                                                //e.printStackTrace();
                                             }
-                                        }
-                                        break;
-                                    case "animation": {
-                                            try {
-                                                String[] pairs = val.substring(val.indexOf('{') + 1, val.indexOf('}')).split(Pattern.quote(","));
-                                                int id = 0;
-                                                tile.animated = true;
-                                                for(String pval : pairs) {
+                                            break;
+                                        case "animation": {
+                                                try {
+                                                    String[] pairs = val.substring(val.indexOf('{') + 1, val.indexOf('}')).split(Pattern.quote(","));
+                                                    int id = 0;
                                                     tile.animated = true;
-                                                    if(id == 0) {
-                                                        if(pval.endsWith("s"))
-                                                            tile.animation_time = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
-                                                        else
-                                                            tile.animation_time = Integer.parseInt(pval);
+                                                    for(String pval : pairs) {
                                                         tile.animated = true;
-                                                    } else {
-                                                        BufferedImage img = null;
-                                                        if(pval.equalsIgnoreCase("null"))
-                                                            img = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
-                                                        else
-                                                            img = getImage(pval);
+                                                        if(id == 0) {
+                                                            if(pval.endsWith("s"))
+                                                                tile.animation_time = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                            else
+                                                                tile.animation_time = Integer.parseInt(pval);
+                                                            tile.animated = true;
+                                                        } else {
+                                                            BufferedImage img = null;
+                                                            if(pval.equalsIgnoreCase("null"))
+                                                                img = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
+                                                            else
+                                                                img = getImage(pval);
 
-                                                        tile.animated = true;
-                                                        tile.animations.add(img);
+                                                            tile.animated = true;
+                                                            tile.animations.add(img);
+                                                        }
+                                                        id++;
                                                     }
-                                                    id++;
+                                                } catch(Exception e) {
+                                                    System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
+                                                    System.err.println(e.toString());
+                                                    //e.printStackTrace();
                                                 }
-                                            } catch(Exception e) {
-                                                System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
-                                                System.err.println(e.toString());
-                                                //e.printStackTrace();
                                             }
-                                        }
-                                        break;
-                                    case "default":
-                                        tile.defaultchar = true;
-                                        defaultchar = tile.character;
-                                        tile_null = tile.image;
-                                        break;
-                                    default:
-                                        System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
-                                        break;
-                                }
-                                break;
-                        }
-                }
+                                            break;
+                                        case "default":
+                                            tile.defaultchar = true;
+                                            defaultchar = tile.character;
+                                            tile_null = tile.image;
+                                            break;
+                                        default:
+                                            System.out.println("Unknown parameter \"" + split[i] + "\" for tile \"" + split[0] + "\".");
+                                            break;
+                                    }
+                                    break;
+                            }
+                    }
 
-                tiles.add(tile);
+                    tiles.add(tile);
+                } else if(type == 1) {
+                    
+                }
             }
         }
 
@@ -1165,6 +1175,54 @@ class Particle {
 
         return particles;
     }
+}
+
+class Entity {
+    public double x = 0;
+    public double y = 0;
+    public double xacceleration = 0;
+    public double yacceleration = 0;
+    public Game game = null;
+    public Random random = new Random();
+    public Queue<EntityState> states = new ConcurrentLinkedQueue<>();
+
+    // init Entity
+    public Entity(Game game) {
+        this.game = game;
+    }
+
+    // Every tick, this function decides how the entity will react
+    public void tick(int tick) {
+        for(EntityState state : states)
+            switch(state) {
+                default:
+                    xacceleration = 0;
+                    yacceleration = 0;
+                    break;
+            }
+    }
+
+    // add a state
+    public void addState(EntityState state) {
+        states.add(state);
+    }
+
+    // remove a state
+    public void removeState(EntityState state) {
+        states.remove(state);
+    }
+
+    // delete and add a state
+    public void setState(EntityState state) {
+        states.clear();
+        addState(state);
+    }
+}
+
+enum EntityState  {
+    FOLLOW,
+    RUN,
+    STILL
 }
 
 class Colors {
