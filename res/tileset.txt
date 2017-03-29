@@ -33,6 +33,7 @@
 # - replace=<char> - Replaces tile with char
 # - speed=<double> - Sets the speed while on tile
 # - filter=<int> - Sets the percent darkness to apply
+# - teleport=<int/string> - teleports to the comma separated x,y coordinates. If there is a + or - sign before one of the coordinates, it will teleport relatively. Ex. teleport=5,+1 will go to x=5 y=y+1
 # - particle={...} - Create particles when player touches tile; parameters are comma-separated; no spaces allowed in parameters
 #   - Please note that the string "[min|max]" will be replaced with a random double from min to max on game init; ex. [0.1|1]
 #   - color:<string> - Sets the color of the particle

@@ -596,10 +596,10 @@ public class Game extends JPanel {
                             this.background = Color.decode(val);
                             break;
                         case "spawn.x":
-                            this.setSpawn(-Integer.parseInt(val), this.spawny, true);
+                            this.setSpawn(-tilesize * Double.parseDouble(val), this.spawny, true);
                             break;
                         case "spawn.y":
-                            this.setSpawn(this.spawnx, -Integer.parseInt(val), true);
+                            this.setSpawn(this.spawnx, -tilesize * Double.parseDouble(val), true);
                             this.y = this.spawny;
                             break;
                         default:
@@ -837,7 +837,7 @@ public class Game extends JPanel {
 
                     tiles.add(tile);
                 } else if(type == 1) {
-                    
+                    // TODO
                 }
             }
         }

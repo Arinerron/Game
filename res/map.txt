@@ -9,8 +9,8 @@ CONFIG:
 # set the spawn to third tile over, it would be 20*3, which equals 60.
 #
 background.color=#000000
-spawn.x=352
-spawn.y=160
+spawn.x=23
+spawn.y=10
 #
 # The configuration ends with the empty line (ex, the one below).
 
@@ -25,12 +25,12 @@ L
                     DDDDDDDDDDDDDDDC________________________________CDDDD
                     DDDDDDD~DDDDDDDC________________________________CDDDD
                     DDDDDDDDDDDDDDDC________________________________CDDDD
-                            ~DD~                                    RRRRR
-                            ~DD~                                    11111
-                            ~DD~                                    22222
-                            ~DD~                                    33333
-                                                                    44444
-                                                                    55555
+                    ~~~~~~~~~D~                                     RRRRR
+                    ~~~~~~~~~D~                                     11111
+                    ~DDDDDDG~D~                                     22222
+                    ~D~~~~~~~D~                                     33333
+                    ~DDDDDDDDD~                                     44444
+                    ~~~~~~~~~~~                                     55555
                                                                     66666
                                                                     77777
                                                                     88888
