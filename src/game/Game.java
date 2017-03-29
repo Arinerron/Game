@@ -453,13 +453,23 @@ public class Game extends JPanel {
                                     particles.add(particle);
                                 }
                             }
+
+                            for(Tile tile : tiles)
+                                if(tick % tile.animation_time == 0) {
+                                    if(tile.animation_frame > tile.animations.size() - 2)
+                                        tile.animation_frame = 0;
+                                    else
+                                        tile.animation_frame++;
+                                }
+
                         } else if(tick > 10) {
                             System.out.println("null!\nnull!\nnull!\nnull!\nnull!\nnull!\nnull!\nA severe error occured.");
                             System.exit(1);
                         }
                         updateImage();
                         threadlocked = false;
-                    }
+                    } else
+                        System.out.println("Warning: Skipped a tick!");
                 }
             }
         }, rate, rate);
@@ -741,7 +751,10 @@ public class Game extends JPanel {
                                                             tile.particle_count = Integer.parseInt(pval);
                                                             break;
                                                         case "iteration":
-                                                            tile.particle_iteration = Integer.parseInt(pval);
+                                                            if(pval.endsWith("s"))
+                                                                tile.particle_iteration = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                            else
+                                                                tile.particle_iteration = Integer.parseInt(pval);
                                                             break;
                                                         case "lifetime":
                                                             if(pval.endsWith("s"))
@@ -766,7 +779,39 @@ public class Game extends JPanel {
                                             } catch(Exception e) {
                                                 System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
                                                 System.err.println(e.toString());
-                                                e.printStackTrace();
+                                                //e.printStackTrace();
+                                            }
+                                        }
+                                        break;
+                                    case "animation": {
+                                            try {
+                                                String[] pairs = val.substring(val.indexOf('{') + 1, val.indexOf('}')).split(Pattern.quote(","));
+                                                int id = 0;
+                                                tile.animated = true;
+                                                for(String pval : pairs) {
+                                                    tile.animated = true;
+                                                    if(id == 0) {
+                                                        if(pval.endsWith("s"))
+                                                            tile.animation_time = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                        else
+                                                            tile.animation_time = Integer.parseInt(pval);
+                                                        tile.animated = true;
+                                                    } else {
+                                                        BufferedImage img = null;
+                                                        if(pval.equalsIgnoreCase("null"))
+                                                            img = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_ARGB);
+                                                        else
+                                                            img = getImage(pval);
+
+                                                        tile.animated = true;
+                                                        tile.animations.add(img);
+                                                    }
+                                                    id++;
+                                                }
+                                            } catch(Exception e) {
+                                                System.err.println("Error: Failed to parse particle string for tile \"" + tile.character + "\".");
+                                                System.err.println(e.toString());
+                                                //e.printStackTrace();
                                             }
                                         }
                                         break;
@@ -854,7 +899,9 @@ public class Game extends JPanel {
                 Tile t = getTile(val);
                 BufferedImage img = null;
                 if(t == null)
-                    img = getTile(defaultchar).image; // tile_null doesn't seem to be working
+                    t = getTile(defaultchar); // tile_null doesn't seem to be working
+                if(t.animated && t.animations.size() != 0)
+                    img = t.animations.get(t.animation_frame);
                 else
                     img = t.image;
                 g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
@@ -1042,6 +1089,11 @@ class Tile {
     public double acceleration = 0.0125;
     public boolean dither = false;
     public boolean slideover = true;
+
+    public boolean animated = false;
+    public int animation_time = 20;
+    public int animation_frame = 0;
+    public java.util.List<BufferedImage> animations = new ArrayList<>();
 
     public boolean particle = false;
     public Color particle_color = Color.BLUE;
