@@ -98,6 +98,8 @@ public class Game extends JPanel {
     public Queue<Entity> entities = new ConcurrentLinkedQueue<>();
     public Queue<Event> events = new ConcurrentLinkedQueue<>();
 
+    public BufferedImage particles_back = null; // optimize by rendering particles in a separate thread
+    public BufferedImage particles_front = null;
     public String commands = "";
 
     public static void main(String[] args) {
@@ -310,8 +312,39 @@ public class Game extends JPanel {
                 if(running) {
                     tick();
 
-                    for(Particle particle : particles)
-                        particle.tick();
+                    new Thread(new Runnable() {@Override public void run() {
+                        BufferedImage particles_front = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                        BufferedImage particles_back = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics g1 = particles_front.getGraphics();
+                        Graphics g2 = particles_back.getGraphics();
+
+                        int mx = (int)(mousedx / 3) / 3; // I don't know why it need two /3's. TODO: debug.
+                        int my = (int)(mousedy / 3) / 3;
+
+                        int tilex = (int)(getTileX(real_width) / 2);
+                        int tiley = (int)(getTileY(real_height) / 2);
+
+                        double x = Game.this.x;
+                        double y = Game.this.y;
+
+                        // draw particles that are in front
+                        for(Particle particle : particles) {
+                            particle.tick();
+
+                            if(particle.front) {
+                                g1.setColor(particle.color);
+                                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
+                                g1.drawLine(px, py, px, py);
+                            } else {
+                                g2.setColor(particle.color);
+                                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
+                                g2.drawLine(px, py, px, py);
+                            }
+                        }
+
+                        Game.this.particles_front = particles_front;
+                        Game.this.particles_front = particles_front;
+                    }}).start();
 
                     if(!threadlocked) {
                             boolean tilenull = tile == null;
@@ -788,11 +821,11 @@ public class Game extends JPanel {
                                             break;
                                         case "copy": // if something changes in this case, press Ctrl+F and search for "// updateme-1"
                                             Tile t = getTile(val.charAt(0));
-                                            
+
                                             tile.image = t.image;
                                             tile.solid = t.solid;
                                             tile.dangerous = t.dangerous;
-                                            tile.slippery = t.slippery
+                                            tile.slippery = t.slippery;
                                             tile.spawn = t.spawn;
                                             tile.replace = t.replace;
                                             tile.speed = t.speed;
@@ -996,6 +1029,7 @@ public class Game extends JPanel {
 
         // do NOT change these
         // 6 months later-- why not change these? o.O
+        // 1 day later-- change what? oh, those.
         final double x = this.x;
         final double y = this.y;
 
@@ -1025,12 +1059,7 @@ public class Game extends JPanel {
         }
 
         // draw particles that are in back
-        for(Particle particle : particles)
-            if(!particle.front) {
-                g.setColor(particle.color);
-                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
-                g.drawLine(px, py, px, py);
-            }
+        g.drawImage(particles_back, 0, 0, null);
 
         // draw the player
         if(this.visible) {
@@ -1041,12 +1070,7 @@ public class Game extends JPanel {
         }
 
         // draw particles that are in front
-        for(Particle particle : particles)
-            if(particle.front) {
-                g.setColor(particle.color);
-                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
-                g.drawLine(px, py, px, py);
-            }
+        g.drawImage(particles_front, 0, 0, null);
 
         // draw the filter on top of everything
         if(filter != 0) {
@@ -1229,6 +1253,16 @@ public class Game extends JPanel {
                             final String key = split2[0];
                             final String val = (split2.length != 1 ? split2[1].replace("{", "").replace("}", "") : ""); // Wow, I just learned replace(Str,Str) is the same as replaceall but without regex!
                             switch(key) {
+                                case "rm": {
+                                        switch(val.toLowerCase()) {
+                                            case "entity":
+                                                entities.clear();
+                                                break;
+                                            case "particle":
+                                                particles.clear();
+                                        }
+                                    }
+                                    break;
                                 case "particle": {
                                         Color particle_color = Color.BLUE;
                                         int particle_count = 1;
@@ -1302,19 +1336,26 @@ public class Game extends JPanel {
                                     tile.filter = (int)((Double.parseDouble(val)) * 2.54);
                                     tile.filterset = true;
                                     break;
-                                case "teleport": //jumphere
+                                case "teleport":
                                     String[] sep = val.split(Pattern.quote(","));
                                     x = telecoord(x, sep[0]);
                                     y = telecoord(y, sep[1]);
                                     break;
                                 default:
-                                    System.err.println("Unknown parameter \"" + key + "\" with value \"" + val + "\" for function \"" + funcname + "\".");
+                                    if(val.length() != 0)
+                                        System.err.println("Unknown parameter \"" + key + "\" with value \"" + val + "\" for function \"" + funcname + "\".");
+                                    else if(key.equalsIgnoreCase(funcname))
+                                        System.err.println("Indefinite loop detected in function \"" + funcname + "\"! Not going to follow loop.");
+                                    else
+                                        executeFunction(config, key);
                             }
                         }
 
                         return;
                     }
                 }
+
+            System.err.println("Failed to find function \"" + funcname + "\". Does not exist.");
         } catch(Exception e) {e.printStackTrace();
             throw new RuntimeException("Failed to parse command config.");
         }

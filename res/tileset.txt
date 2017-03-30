@@ -79,6 +79,7 @@
 #   - xacceleration:<double> - how much to accelerate every tick on the x axis
 #   - yacceleration:<double> - how much to accelerate every tick on the y axis
 #   - front:<boolean> - if true, particles render on top of players; else behind
+# - rm=<string> - remove all particle/entity
 
 [tiles]
 
@@ -112,7 +113,7 @@ R tiles/dirt speed=0.5 filter=0
 # default commands
 
 a (
-    particle={color:#ffffff,count:100,iteration:1,lifetime:2000};
+    particle={color:#ffffff,count:2,iteration:20,lifetime:2000};
 )
 
 [entities]
