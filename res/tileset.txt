@@ -86,7 +86,7 @@
 # Default tiles
 ? tiles/null solid nojump
 S null spawn replace=tiles/dirt
-D tiles/dirt particle={color:#5b2d00,count:4,iteration:50,lifetime:800,xacceleration:[-0.001|0.001],yacceleration:[-0.001|0.001],front:false} event={onentry:a,onmove:a}
+D tiles/dirt event={onmove:a}
 . tiles/water speed=0.2 nojump
 L tiles/lava fluid nojump dangerous default animation={300,tiles/lava,tiles/lava2,tiles/lava3,tiles/lava4}
 C tiles/dirt checkpoint
@@ -113,7 +113,7 @@ R tiles/dirt speed=0.5 filter=0
 # default commands
 
 a (
-    particle={color:#ffffff,count:2,iteration:20,lifetime:2000};
+    particle={color:#5b2d00,count:500,iteration:40,lifetime:800,xacceleration:[-0.001|0.001],yacceleration:[-0.001|0.001],front:false}
 )
 
 [entities]

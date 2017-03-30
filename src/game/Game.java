@@ -312,6 +312,9 @@ public class Game extends JPanel {
                 if(running) {
                     tick();
 
+                    for(Particle particle : particles)
+                        particle.tick();
+
                     new Thread(new Runnable() {@Override public void run() {
                         BufferedImage particles_front = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                         BufferedImage particles_back = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -329,8 +332,6 @@ public class Game extends JPanel {
 
                         // draw particles that are in front
                         for(Particle particle : particles) {
-                            particle.tick();
-
                             if(particle.front) {
                                 g1.setColor(particle.color);
                                 int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
@@ -343,7 +344,7 @@ public class Game extends JPanel {
                         }
 
                         Game.this.particles_front = particles_front;
-                        Game.this.particles_front = particles_front;
+                        Game.this.particles_back = particles_back;
                     }}).start();
 
                     if(!threadlocked) {
