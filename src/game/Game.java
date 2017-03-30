@@ -1055,7 +1055,7 @@ public class Game extends JPanel {
 
             if(ret > 0)
                 ret = 0;
-            
+
             return ret;
         }
     }
@@ -1241,6 +1241,14 @@ class Entity {
     public void tick(int tick) {
         for(EntityState state : states)
             switch(state) {
+                case EntityState.FOLLOW:
+                    break;
+                case EntityState.RUN:
+                    break;
+                case EntityState.STILL:
+                    xacceleration = 0;
+                    yacceleration = 0;
+                    break;
                 default:
                     xacceleration = 0;
                     yacceleration = 0;
