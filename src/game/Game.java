@@ -1055,7 +1055,7 @@ public class Game extends JPanel {
 
             if(ret > 0)
                 ret = 0;
-            System.out.println("x:" + (int)x + " & parsed:" + parsed + " & outcome:" + (int)ret);
+            
             return ret;
         }
     }

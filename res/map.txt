@@ -47,10 +47,10 @@ L
 L
 L
 L
-L                       GGGGGGGGGGGG    D   D
+L                       GGGGGGGGGGGG  D   D
 L                       GGGGGGGGGGGG
-L                       GGGGGGGGGGGG    D D D
-L                       GGGGGGGGGGGG    DDDDD
+L                       GGGGGGGGGGGG  D D D
+L                       GGGGGGGGGGGG  DDDDD
 L
 L
 L
