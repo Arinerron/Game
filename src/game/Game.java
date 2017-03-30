@@ -94,8 +94,11 @@ public class Game extends JPanel {
     public Color background = Color.BLACK;
     public Random random = new Random();
 
-    public Queue<Particle> particles = new ConcurrentLinkedQueue<Particle>();
-    public Queue<Entity> entities = new ConcurrentLinkedQueue<Entity>();
+    public Queue<Particle> particles = new ConcurrentLinkedQueue<>();
+    public Queue<Entity> entities = new ConcurrentLinkedQueue<>();
+    public Queue<Event> events = new ConcurrentLinkedQueue<>();
+
+    public String commands = "";
 
     public static void main(String[] args) {
         if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
@@ -478,6 +481,27 @@ public class Game extends JPanel {
                 }
             }
         }, rate, rate);
+
+        // event dispather thread
+        new Thread(new Runnable() {@Override public void run() {
+            final String comma = Pattern.quote(",");
+            final String colon = Pattern.quote(":");
+
+            while(true) {
+                if(!events.isEmpty()) {
+                    Event event = events.remove();
+
+                    if(event.tile != null && event.tile.eventstring.length() != 0) {
+                        String[] split = tile.eventstring.split(comma);
+                        for(String s : split) {
+                            String[] split2 = s.split(colon);
+                            if(split2[0].equalsIgnoreCase(event.name))
+                                executeFunction(commands, split2[1]);
+                        }
+                    }
+                }
+            }
+        }}).start();
     }
 
     // sets a spawn point and logs it
@@ -547,7 +571,13 @@ public class Game extends JPanel {
 
     // returns the tile object the player is on
     public Tile getCurrentTile() {
+        Tile oldtile = this.tile;
         this.tile = getTile(getTile((int)((x + half) / tilesize),(int)(y / tilesize)));
+        if(this.tile != oldtile) {
+            events.add(new Event("onexit", oldtile));
+            events.add(new Event("onentry", this.tile));
+        }
+
         return this.tile;
     }
 
@@ -651,7 +681,8 @@ public class Game extends JPanel {
     public void loadTileset(String name) throws Exception {
         String[] lines = getString(name).split(Pattern.quote("\n"));
         java.util.List<Tile> tiles = new java.util.ArrayList<>();
-        int type = 0; // 0=tile, 1=entity
+        int type = 0; // 0=tile, 1=entity, 2=command
+        StringBuilder builder = new StringBuilder();
 
         for(String line : lines) {
             if(!line.startsWith("#") && line.length() != 0) {
@@ -659,6 +690,8 @@ public class Game extends JPanel {
                     type = 0;
                 else if(line.toLowerCase().startsWith("[entities]"))
                     type = 1;
+                else if(line.toLowerCase().startsWith("[commands]"))
+                    type = 2;
                 else if(type == 0) {
                     String[] split = line.split(Pattern.quote(" "));
                     Tile tile = new Tile();
@@ -737,6 +770,10 @@ public class Game extends JPanel {
                                             break;
                                         case "unlock":
                                             tile.slideover = true;
+                                            break;
+                                        case "event":
+                                        case "events":
+                                            tile.eventstring = val.replace("{", "").replace("}", "");
                                             break;
                                         case "teleport":
                                             String[] splitx = val.split(Pattern.quote(","));
@@ -849,11 +886,14 @@ public class Game extends JPanel {
                     tiles.add(tile);
                 } else if(type == 1) {
                     // TODO
+                } else if(type == 2) {
+                    builder.append(line + "\n");
                 }
             }
         }
 
         this.tiles = tiles;
+        commands = builder.toString().replace(" ", "").replace("\n", "");
     }
 
     // convert a string like "[0.01-0.4]" to a random double between the range
@@ -1124,6 +1164,117 @@ public class Game extends JPanel {
     public int secondsToTicks(double seconds) { // TODO: move to Game class
         return (int)((double)((double)(seconds * 1000) / rate));
     }
+
+    // parse function config and execute the given function
+    public void executeFunction(String config, String funcname) { // TODO: Make an evet dispatcher so the game doesn't lag
+        final String semicolon = Pattern.quote(";");
+        final String equals = Pattern.quote("=");
+
+        try {
+            String[] split = config.split(Pattern.quote("("));
+            for(int i = 0; i < split.length; i++)
+                if(i != 0) {
+                    String name = split[i - 1];
+                    if(name.contains(")"))
+                        name = name.substring(name.lastIndexOf(")") + 1);
+                    
+                    if(name.equals(funcname)) {
+                        String[] commandz = (split[i].contains(")") ? split[i].substring(0, split[i].lastIndexOf(")")) : split[i]).split(semicolon); // TODO try removing if
+                        for(String command : commandz) { // the funny spelling is cause the array `commands` already exists and it's easier to program when there aren't two arrays with the same name :P
+                            final String[] split2 = command.toLowerCase().split(equals);
+                            final String key = split2[0];
+                            final String val = (split2.length != 1 ? split2[1].replace("{", "").replace("}", "") : ""); // Wow, I just learned replace(Str,Str) is the same as replaceall but without regex!
+                            switch(key) {
+                                case "particle": {
+                                        Color particle_color = Color.BLUE;
+                                        int particle_count = 1;
+                                        int particle_iteration = 1;
+                                        int particle_lifetime = 1000;
+                                        double particle_xacceleration = 0.01;
+                                        double particle_yacceleration = 0.01;
+                                        boolean particle_front = true;
+
+                                        String[] pairs = val.split(Pattern.quote(","));
+
+                                        for(String pair : pairs) {
+                                            String[] parameter = pair.split(Pattern.quote(":"));
+                                            String pkey = parameter[0].toLowerCase();
+                                            String pval = parameter[1].toLowerCase();
+
+                                            pval = replaceBrackets(pval);
+
+                                            switch(pkey) {
+                                                case "color":
+                                                    particle_color = Color.decode(pval);
+                                                    break;
+                                                case "count":
+                                                    particle_count = Integer.parseInt(pval);
+                                                    break;
+                                                case "iteration":
+                                                    if(pval.endsWith("s"))
+                                                        particle_iteration = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                    else
+                                                        particle_iteration = Integer.parseInt(pval);
+                                                    break;
+                                                case "lifetime":
+                                                    if(pval.endsWith("s"))
+                                                        particle_lifetime = secondsToTicks(Double.parseDouble(pval.substring(0, pval.length() - 2)));
+                                                    else
+                                                        particle_lifetime = Integer.parseInt(pval);
+                                                    break;
+                                                case "front":
+                                                    particle_front = Boolean.parseBoolean(pval);
+                                                    break;
+                                                case "xacceleration":
+                                                    particle_xacceleration = Double.parseDouble(pval);
+                                                    break;
+                                                case "yacceleration":
+                                                    particle_yacceleration = Double.parseDouble(pval);
+                                                    break;
+                                                default:
+                                                    System.out.println("Unknown parameter \"" + pkey + "\" for particle string for function \"" + funcname + "\"");
+                                                    break;
+                                            }
+                                        }
+
+                                        java.util.List<Particle> particles2 = Particle.randomlySpread(Game.this, x + half, y + half, particle_color, particle_lifetime, particle_count);
+
+                                        for(Particle particle : particles2) {
+                                            particle.xacceleration =  particle_xacceleration;
+                                            particle.yacceleration = particle_yacceleration;
+                                            particle.front = particle_front;
+
+                                            particles.add(particle);
+                                        }
+                                    }
+                                    break;
+                                case "kill":
+                                    respawn();
+                                    break;
+                                case "dither":
+                                    eightbit = Boolean.parseBoolean(val);
+                                    break;
+                                case "filter":
+                                    tile.filter = (int)((Double.parseDouble(val)) * 2.54);
+                                    tile.filterset = true;
+                                    break;
+                                case "teleport": //jumphere
+                                    String[] sep = val.split(Pattern.quote(","));
+                                    x = telecoord(x, sep[0]);
+                                    y = telecoord(y, sep[1]);
+                                    break;
+                                default:
+                                    System.err.println("Unknown parameter \"" + key + "\" with value \"" + val + "\" for function \"" + funcname + "\".");
+                            }
+                        }
+
+                        return;
+                    }
+                }
+        } catch(Exception e) {e.printStackTrace();
+            throw new RuntimeException("Failed to parse command config.");
+        }
+    }
 }
 
 class Tile {
@@ -1146,6 +1297,7 @@ class Tile {
     public boolean teleport = false;
     public String teleportx = "NaN";
     public String teleporty = "NaN";
+    public String eventstring = "";
 
     public boolean animated = false;
     public int animation_time = 20;
@@ -1278,6 +1430,16 @@ enum EntityState  {
     FOLLOW,
     RUN,
     STILL
+}
+
+class Event {
+    public String name = "";
+    public Tile tile = null;
+
+    public Event(String name, Tile tile) {
+        this.name = name;
+        this.tile = tile;
+    }
 }
 
 class Colors {
