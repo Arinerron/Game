@@ -504,11 +504,12 @@ public class Game extends JPanel {
     public void respawn() {
         reset(); // Game game, double x, double y, Color color, int lifetime, int number
 
-        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 800, 75);
+        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 80);
 
         for(Particle particle : particles) {
-            particle.xacceleration =  (Math.random() - 0.5) / 50;
-            particle.yacceleration = (Math.random() - 0.5) / 50;
+            particle.xacceleration =  (Math.random() - 0.5) / 10;
+            particle.yacceleration = (Math.random() - 0.5) / 10;
+            particle.lifetime = (int)(Math.random() * 400);
             particle.front = random.nextBoolean();
 
             this.particles.add(particle);
@@ -1241,11 +1242,11 @@ class Entity {
     public void tick(int tick) {
         for(EntityState state : states)
             switch(state) {
-                case EntityState.FOLLOW:
+                case FOLLOW:
                     break;
-                case EntityState.RUN:
+                case RUN:
                     break;
-                case EntityState.STILL:
+                case STILL:
                     xacceleration = 0;
                     yacceleration = 0;
                     break;
