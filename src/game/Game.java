@@ -347,6 +347,7 @@ public class Game extends JPanel {
                         if(w || s || a || d || (middleclicked && slideover) || jumping) {
                             moving = true;
                             if(middleclicked && slideover && (tilenull || tile.slideover)) {
+                                // TODO fix this bug!
                                 //System.out.println((middleclicked && slideover && (tilenull || tile.slideover)));
                                 //System.out.println("..." + (tilenull || tile.slideover));
                                 if(mousex != 0 && mousey != 0) {
@@ -405,6 +406,8 @@ public class Game extends JPanel {
                                 yacceleration = speed;
                             else if(yacceleration < -speed)
                                 yacceleration = -speed;
+
+                            dispatchEvent("onmove");
                         } else
                             moving = false;
 
@@ -528,6 +531,8 @@ public class Game extends JPanel {
     public void respawn() {
         reset(); // Game game, double x, double y, Color color, int lifetime, int number
 
+        dispatchEvent("ondeath");
+
         java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 80);
 
         for(Particle particle : particles) {
@@ -574,8 +579,8 @@ public class Game extends JPanel {
         Tile oldtile = this.tile;
         this.tile = getTile(getTile((int)((x + half) / tilesize),(int)(y / tilesize)));
         if(this.tile != oldtile) {
-            events.add(new Event("onexit", oldtile));
-            events.add(new Event("onentry", this.tile));
+            events.add(new Event("onexit", oldtile)); // not using dispatch event cause current tile has changed
+            dispatchEvent("onentry");
         }
 
         return this.tile;
@@ -780,6 +785,45 @@ public class Game extends JPanel {
                                             tile.teleportx = splitx[0];
                                             tile.teleporty = splitx[1];
                                             tile.teleport = true;
+                                            break;
+                                        case "copy": // if something changes in this case, press Ctrl+F and search for "// updateme-1"
+                                            Tile t = getTile(val.charAt(0));
+                                            
+                                            tile.image = t.image;
+                                            tile.solid = t.solid;
+                                            tile.dangerous = t.dangerous;
+                                            tile.slippery = t.slippery
+                                            tile.spawn = t.spawn;
+                                            tile.replace = t.replace;
+                                            tile.speed = t.speed;
+                                            tile.filter = t.filter;
+                                            tile.filterset = t.filterset;
+                                            tile.jump = t.jump;
+                                            tile.defaultchar = t.defaultchar;
+                                            tile.checkpoint = t.checkpoint;
+                                            tile.acceleration = t.acceleration;
+                                            tile.dither = t.dither;
+                                            tile.slideover = t.slideover;
+                                            tile.teleport = t.teleport;
+                                            tile.teleportx = t.teleportx;
+                                            tile.teleporty = t.teleporty;
+                                            tile.eventstring = t.eventstring;
+
+                                            tile.animated = t.animated;
+                                            tile.animation_time = t.animation_time;
+                                            tile.animation_frame = t.animation_frame;
+
+                                            for(BufferedImage buffimg : t.animations)
+                                                tile.animations.add(buffimg);
+
+                                            tile.particle = t.particle;
+                                            tile.particle_color = t.particle_color;
+                                            tile.particle_count = t.particle_count;
+                                            tile.particle_iteration = t.particle_iteration;
+                                            tile.particle_lifetime = t.particle_lifetime;
+                                            tile.particle_xacceleration = t.particle_xacceleration;
+                                            tile.particle_front = t.particle_front;
+
                                             break;
                                         case "particle": {
                                                 try {
@@ -1177,7 +1221,7 @@ public class Game extends JPanel {
                     String name = split[i - 1];
                     if(name.contains(")"))
                         name = name.substring(name.lastIndexOf(")") + 1);
-                    
+
                     if(name.equals(funcname)) {
                         String[] commandz = (split[i].contains(")") ? split[i].substring(0, split[i].lastIndexOf(")")) : split[i]).split(semicolon); // TODO try removing if
                         for(String command : commandz) { // the funny spelling is cause the array `commands` already exists and it's easier to program when there aren't two arrays with the same name :P
@@ -1249,7 +1293,7 @@ public class Game extends JPanel {
                                     }
                                     break;
                                 case "kill":
-                                    respawn();
+                                    kill();
                                     break;
                                 case "dither":
                                     eightbit = Boolean.parseBoolean(val);
@@ -1275,9 +1319,13 @@ public class Game extends JPanel {
             throw new RuntimeException("Failed to parse command config.");
         }
     }
+
+    public void dispatchEvent(String name) {
+        events.add(new Event(name, tile));
+    }
 }
 
-class Tile {
+class Tile { // if something changes in this class, press Ctrl+F and search for "// updateme-1"
     public char character = '?';
     public BufferedImage image = null;
     public boolean solid = false;
@@ -1309,8 +1357,8 @@ class Tile {
     public int particle_count = 1;
     public int particle_iteration = 1;
     public int particle_lifetime = 1000;
-    public double particle_xacceleration = 0.01;
-    public double particle_yacceleration = 0.01;
+    public double particle_xacceleration = 0;
+    public double particle_yacceleration = 0;
     public boolean particle_front = true;
 }
 
