@@ -27,7 +27,7 @@ L
                     DDDDDDDDDDDDDDDC________________________________CDDDD
                     ~~~~~~~~~D~                                     RRRRR
                     ~~~~~~~~~D~                                     11111
-                    ~DDDDDDG~D~                                     22222
+                    ~DDDDDDX~D~                                     22222
                     ~D~~~~~~~D~                                     33333
                     ~DDDDDDDDD~                                     44444
                     ~~~~~~~~~~~                                     55555
@@ -40,3 +40,17 @@ L
                             ~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDRRRRR~
                             ~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDRRRRR~
                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L
+L
+L
+L
+L
+L
+L
+L                       GGGGGGGGGGGG    D   D
+L                       GGGGGGGGGGGG
+L                       GGGGGGGGGGGG    D D D
+L                       GGGGGGGGGGGG    DDDDD
+L
+L
+L

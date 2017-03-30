@@ -463,6 +463,10 @@ public class Game extends JPanel {
                                         tile.animation_frame++;
                                 }
 
+                            if(tile.teleport) {
+                                x = telecoord(x, tile.teleportx);
+                                y = telecoord(y, tile.teleporty);
+                            }
                         } else if(tick > 10) {
                             System.out.println("null!\nnull!\nnull!\nnull!\nnull!\nnull!\nnull!\nA severe error occured.");
                             System.exit(1);
@@ -733,6 +737,12 @@ public class Game extends JPanel {
                                         case "unlock":
                                             tile.slideover = true;
                                             break;
+                                        case "teleport":
+                                            String[] splitx = val.split(Pattern.quote(","));
+                                            tile.teleportx = splitx[0];
+                                            tile.teleporty = splitx[1];
+                                            tile.teleport = true;
+                                            break;
                                         case "particle": {
                                                 try {
                                                     tile.particle = true;
@@ -900,21 +910,32 @@ public class Game extends JPanel {
         int tiley = (int)(getTileY(real_height) / 2);
 
         // do NOT change these
+        // 6 months later-- why not change these? o.O
         final double x = this.x;
         final double y = this.y;
 
+        HashMap<Character, BufferedImage> cache = new HashMap<>(); // cache animation and tile-getting
         for(int x2 = 0; x2 < map.length; x2++) {
             for(int y2 = 0; y2 < map[x2].length; y2++) { // TODO: Optimize
                 char val = getTile(x2, y2);
-                Tile t = getTile(val);
                 BufferedImage img = null;
-                if(t == null)
-                    t = getTile(defaultchar); // tile_null doesn't seem to be working
-                if(t.animated && t.animations.size() != 0)
-                    img = t.animations.get(t.animation_frame);
-                else
-                    img = t.image;
-                g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null);
+
+                if(cache.containsKey(val)) { // check cache for tile
+                    img = cache.get(val);
+                } else { // get image
+                    Tile t = getTile(val);
+
+                    if(t == null)
+                        t = getTile(defaultchar); // tile_null doesn't seem to be working
+                    if(t.animated && t.animations.size() != 0)
+                        img = t.animations.get(t.animation_frame);
+                    else
+                        img = t.image;
+
+                    cache.put(val, img); // store image in cache
+                }
+
+                g.drawImage(img, (x2 * tilesize) + tilex + (int)(x) + mx, (y2 * tilesize) + tiley + (int)(y) + my, null); // render tile
             }
         }
 
@@ -1017,6 +1038,28 @@ public class Game extends JPanel {
         this.map[x][y] = value;
     }
 
+    // calculcates coordinates to teleport to
+    public double telecoord(double x, String order) { // can be x or y
+        if(order.equals("NaN"))
+            return x;
+        else {
+            double parsed = -tilesize * Double.parseDouble(order.substring(1));
+            double ret = 0;
+
+            if(order.startsWith("+"))
+                ret = x + parsed;
+            else if(order.startsWith("-"))
+                ret = x - parsed;
+            else
+                ret = parsed;
+
+            if(ret > 0)
+                ret = 0;
+            System.out.println("x:" + (int)x + " & parsed:" + parsed + " & outcome:" + (int)ret);
+            return ret;
+        }
+    }
+
     // gets a BufferedImage of the character from a spritesheet
     public BufferedImage getCharacter(int direction, int tick, boolean walking) {
         int i = (int)(tick / ((rate / (speed)) * 1.6)) % 4;
@@ -1099,6 +1142,9 @@ class Tile {
     public double acceleration = 0.0125;
     public boolean dither = false;
     public boolean slideover = true;
+    public boolean teleport = false;
+    public String teleportx = "NaN";
+    public String teleporty = "NaN";
 
     public boolean animated = false;
     public int animation_time = 20;
