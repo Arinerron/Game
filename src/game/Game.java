@@ -343,7 +343,7 @@ public class Game extends JPanel {
                         }
 
                         Game.this.particles_front = particles_front;
-                        Game.this.particles_front = particles_front;
+                        Game.this.particles_back = particles_back;
                     }}).start();
 
                     if(!threadlocked) {
@@ -1315,14 +1315,16 @@ public class Game extends JPanel {
                                             }
                                         }
 
-                                        java.util.List<Particle> particles2 = Particle.randomlySpread(Game.this, x + half, y + half, particle_color, particle_lifetime, particle_count);
+                                        if(tick % particle_iteration == 0) {
+                                            java.util.List<Particle> particles2 = Particle.randomlySpread(Game.this, x + half, y + half, particle_color, particle_lifetime, particle_count);
 
-                                        for(Particle particle : particles2) {
-                                            particle.xacceleration =  particle_xacceleration;
-                                            particle.yacceleration = particle_yacceleration;
-                                            particle.front = particle_front;
+                                            for(Particle particle : particles2) {
+                                                particle.xacceleration =  particle_xacceleration;
+                                                particle.yacceleration = particle_yacceleration;
+                                                particle.front = particle_front;
 
-                                            particles.add(particle);
+                                                particles.add(particle);
+                                            }
                                         }
                                     }
                                     break;
