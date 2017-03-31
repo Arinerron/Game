@@ -622,8 +622,8 @@ public class Game extends JPanel {
             float g = random.nextFloat();
             float b = random.nextFloat() / 3f;
             particle.color = new Color(r, g, b);
-            particle.xacceleration =  (Math.random() - 0.5) / 4;
-            particle.yacceleration = (Math.random() - 0.5) / 4;
+            particle.xacceleration =  (Math.random() - 0.5) / 3;
+            particle.yacceleration = (Math.random() - 0.5) / 3;
             particle.lifetime = (int)(Math.random() * 150);
             particle.front = random.nextBoolean();
 
