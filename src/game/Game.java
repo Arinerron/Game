@@ -239,6 +239,10 @@ public class Game extends JPanel {
                     }
                 else if(e.getKeyCode() == KeyEvent.VK_F3)
                     stats = !stats;
+                else if(e.getKeyCode() == KeyEvent.VK_F5)
+                    mainplayer.setVolume(mainplayer.getVolume() - 7f);
+                else if(e.getKeyCode() == KeyEvent.VK_F6)
+                    mainplayer.setVolume(mainplayer.getVolume() + 7f);
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -611,9 +615,13 @@ public class Game extends JPanel {
 
         dispatchEvent("ondeath");
 
-        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 80);
+        java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 100);
 
         for(Particle particle : particles) {
+            float r = random.nextFloat() / 3f;
+            float g = random.nextFloat();
+            float b = random.nextFloat() / 3f;
+            particle.color = new Color(r, g, b);
             particle.xacceleration =  (Math.random() - 0.5) / 4;
             particle.yacceleration = (Math.random() - 0.5) / 4;
             particle.lifetime = (int)(Math.random() * 150);
