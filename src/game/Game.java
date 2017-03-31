@@ -20,6 +20,12 @@ public class Game extends JPanel {
 
     public boolean slideover = true;
     public boolean eightbit = false;
+    public boolean stats = false;
+    public int frames = 0;
+    public int fps = 0;
+    public int frames2 = 0;
+    public int fps2 = 0;
+    public int particlecount = 0;
     public int rate = 5; // tick is every 5 milis
     public int tick = 0; // current tick
     /*
@@ -28,8 +34,8 @@ public class Game extends JPanel {
      */
 
     public static final int tilesize = 16; // set this to the tilesize
-    public int width = tilesize * 12; // 16
-    public int height = tilesize * 6; // 9
+    public int width = tilesize * 10; // 12
+    public int height = tilesize * 5; // 9 or 6? idk
     final int characterwidth = 16, characterheight = 16; // size of character
 
     public final int half = (int)(tilesize / 2);
@@ -209,9 +215,11 @@ public class Game extends JPanel {
                     shift = false;
                 else if(e.getKeyCode() == KeyEvent.VK_R) {
                     respawn();
-                }
-                else if(e.getKeyCode() == KeyEvent.VK_B)
+                } else if(e.getKeyCode() == KeyEvent.VK_B)
                     eightbit = !eightbit;
+                else if(e.getKeyCode() == KeyEvent.VK_F3) {
+                    stats = !stats;
+                }
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -538,6 +546,16 @@ public class Game extends JPanel {
                 }
             }
         }}).start();
+
+
+        new java.util.Timer().scheduleAtFixedRate(new TimerTask() {@Override public void run() {
+            fps = frames;
+            frames = 0;
+            fps2 = frames2;
+            frames2 = 0;
+
+            particlecount = particles.size();
+        }}, 1000, 1000);
     }
 
     // sets a spawn point and logs it
@@ -1081,6 +1099,7 @@ public class Game extends JPanel {
         // set the new image
         g.dispose();
         this.setImage(image);
+        frames++;
     }
 
     // Generate image and generate position vars
@@ -1108,6 +1127,8 @@ public class Game extends JPanel {
         }
     }
 
+    public Font monospaced = new Font("Monospaced", Font.PLAIN, 12);
+
     // draw whatever is in the image variable
     public void paintComponent(Graphics g) {
         /**
@@ -1119,7 +1140,21 @@ public class Game extends JPanel {
         if(this.image != null) {
             super.paintComponent(g);
             g.drawImage(this.image, add, addy, wid, hei, null);
+
+            if(stats) { // print statistics
+                g.setColor(new Color(0f, 0f, 0f, 0.5f));
+                g.fillRect(0, 0, 175, 95);
+                g.setColor(Color.GREEN);
+                g.setFont(monospaced);
+                g.drawString("FPS: " + fps + " & " + fps2, 15, 20);
+                g.drawString("Particles: " + particlecount, 15, 35);
+                g.drawString("Tick: " + tick, 15, 50);
+                g.drawString("Position: [" + -(int)x + ", " + -(int)y + "]", 15, 65);
+                g.drawString("Tile: [" + -(int)(x / tilesize) + ", " + -(int)(y / tilesize) + "]", 15, 80);
+            }
         }
+
+        frames2++;
     }
 
     // returns the value of a tile at x and y
