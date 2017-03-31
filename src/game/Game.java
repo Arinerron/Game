@@ -573,6 +573,8 @@ public class Game extends JPanel {
 
             particlecount = particles.size();
         }}, 1000, 1000);
+        
+        respawn();
     }
 
     // sets a spawn point and logs it
@@ -604,9 +606,9 @@ public class Game extends JPanel {
         java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 80);
 
         for(Particle particle : particles) {
-            particle.xacceleration =  (Math.random() - 0.5) / 10;
-            particle.yacceleration = (Math.random() - 0.5) / 10;
-            particle.lifetime = (int)(Math.random() * 400);
+            particle.xacceleration =  (Math.random() - 0.5) / 4;
+            particle.yacceleration = (Math.random() - 0.5) / 4;
+            particle.lifetime = (int)(Math.random() * 150);
             particle.front = random.nextBoolean();
 
             this.particles.add(particle);
