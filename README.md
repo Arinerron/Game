@@ -30,6 +30,8 @@ The allowed parameters are:
 - `D` - Move right
 - `R` - Respawn
 - `B` - Toggle 8-bit rendering mode
+- `F2` - Screenshot
+- `F3` - Display debug info
 - `<SPACE>` - Jump (disabled by default)
 - `<RIGHT_CLICK>` - Hold to pan view and speed walk
 - `<MIDDLE_CLICK>` - Hold to speed walk towards mouse
