@@ -112,7 +112,7 @@ R tiles/dirt speed=0.5 filter=0
 # default commands
 
 a (
-    particle={color:#ffffff,count:100,iteration:1,lifetime:2000};
+    particle={color:#ffffff,count:1,iteration:200,lifetime:2000};
 )
 
 [entities]

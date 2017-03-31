@@ -788,11 +788,11 @@ public class Game extends JPanel {
                                             break;
                                         case "copy": // if something changes in this case, press Ctrl+F and search for "// updateme-1"
                                             Tile t = getTile(val.charAt(0));
-                                            
+
                                             tile.image = t.image;
                                             tile.solid = t.solid;
                                             tile.dangerous = t.dangerous;
-                                            tile.slippery = t.slippery
+                                            tile.slippery = t.slippery;
                                             tile.spawn = t.spawn;
                                             tile.replace = t.replace;
                                             tile.speed = t.speed;
