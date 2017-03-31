@@ -5,12 +5,14 @@ CONFIG:
 # - background.color - The color of the background, as string
 # - spawn.x - The X coordinate for spawning
 # - spawn.y - The Y coordinate for spawning
+# - music.file - The wav file to play, without the extension. filepath in res/mus/
 # Note that the coordinates MUST be integers. A tile is 20x20, so if you want to
 # set the spawn to third tile over, it would be 20*3, which equals 60.
 #
 background.color=#000000
 spawn.x=23
 spawn.y=10
+music.file=chip
 #
 # The configuration ends with the empty line (ex, the one below).
 

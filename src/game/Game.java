@@ -12,6 +12,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.text.*;
 import javax.imageio.*;
+import javax.sound.sampled.*;
 import tileeditor.*;
 
 public class Game extends JPanel {
@@ -109,6 +110,7 @@ public class Game extends JPanel {
     public BufferedImage particles_back = null; // optimize by rendering particles in a separate thread
     public BufferedImage particles_front = null;
     public String commands = "";
+    public SoundPlayer mainplayer = null;
 
     public static void main(String[] args) {
         if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
@@ -564,7 +566,13 @@ public class Game extends JPanel {
             }
         }}).start();
 
+        // audio playing thread
+        new Thread(new Runnable() {@Override public void run() {
+            if(mainplayer != null)
+                mainplayer.loop();
+        }}).start();
 
+        // F3 statistics-updating thread
         new java.util.Timer().scheduleAtFixedRate(new TimerTask() {@Override public void run() {
             fps = frames;
             frames = 0;
@@ -573,7 +581,7 @@ public class Game extends JPanel {
 
             particlecount = particles.size();
         }}, 1000, 1000);
-        
+
         respawn();
     }
 
@@ -711,6 +719,11 @@ public class Game extends JPanel {
                         case "spawn.y":
                             this.setSpawn(this.spawnx, -tilesize * Double.parseDouble(val), true);
                             this.y = this.spawny;
+                            break;
+                        case "music.file":
+                            if(mainplayer != null)
+                                mainplayer.dispose();
+                            this.mainplayer = new SoundPlayer(new File("../res/mus/" + val + ".wav"));
                             break;
                         default:
                             System.out.println("Unknown config option \"" + key + "\" for map file \"" + name + "\".");
@@ -1393,6 +1406,9 @@ public class Game extends JPanel {
                                 case "dither":
                                     eightbit = Boolean.parseBoolean(val);
                                     break;
+                                case "sound":
+                                    new SoundPlayer(new File("../res/mus/" + val + ".wav")).play();
+                                    break;
                                 case "filter":
                                     tile.filter = (int)((Double.parseDouble(val)) * 2.54);
                                     tile.filterset = true;
@@ -1589,6 +1605,82 @@ class Event {
     public Event(String name, Tile tile) {
         this.name = name;
         this.tile = tile;
+    }
+}
+
+class SoundPlayer {
+    private File file = null;
+    private Clip clip = null;
+    private FloatControl controls = null;
+    private long position = 0;
+
+    public SoundPlayer(File file) {
+        this.file = file;
+
+        try {
+            this.clip = AudioSystem.getClip();
+            this.clip.open(AudioSystem.getAudioInputStream(file.toURI().toURL().openStream()));
+            this.controls = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        } catch (Exception e) {
+            System.err.println("Failed to initialize sound player for file " + file.getAbsolutePath());
+            e.printStackTrace();
+        }
+    }
+
+    public void play() {
+        this.clip.setMicrosecondPosition(position);
+        this.clip.start();
+    }
+
+    public void stop() {
+        this.position = 0;
+        this.clip.stop();
+        this.clip.flush();
+    }
+
+    public void restart() {
+        stop();
+        play();
+    }
+
+    public void loop() {
+        this.stop();
+        this.clip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
+
+    public void pause() {
+        this.position = clip.getMicrosecondPosition();
+
+        this.clip.stop();
+        this.clip.flush();
+    }
+
+    // call this when done with audio
+    public void dispose() {
+        try {
+            this.clip.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.clip = null;
+        }
+    }
+
+    // 0f-1f I think?
+    public void setVolume(float volume) {
+        this.controls.setValue((float) Math.min(this.controls.getMaximum(), Math.max(this.controls.getMinimum(), volume)));
+    }
+
+    public float getVolume() {
+        return this.controls.getValue();
+    }
+
+    public boolean isPlaying() {
+        return this.clip != null && this.clip.isRunning();
+    }
+
+    public File getFile() {
+        return this.file;
     }
 }
 
