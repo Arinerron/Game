@@ -10,6 +10,7 @@ import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.nio.file.*;
+import java.text.*;
 import javax.imageio.*;
 import tileeditor.*;
 
@@ -90,6 +91,7 @@ public class Game extends JPanel {
     public char defaultchar = '?';
     public boolean visible = true;
 
+    public int screenshot = -1;
     public double jumpheight = tilesize;
     public boolean moving = false;
     public double speed = 0.4;
@@ -217,9 +219,24 @@ public class Game extends JPanel {
                     respawn();
                 } else if(e.getKeyCode() == KeyEvent.VK_B)
                     eightbit = !eightbit;
-                else if(e.getKeyCode() == KeyEvent.VK_F3) {
+                else if(e.getKeyCode() == KeyEvent.VK_F2)
+                    try {
+                        File file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".png");
+                        int i = 0;
+                        while(file.exists()) {
+                            i++;
+                            file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + "_" + i + ".png");
+                        }
+
+                        ImageIO.write(image, "png", file);
+
+                        screenshot = 0;
+                    } catch(Exception e2) {
+                        System.err.println("Screenshot failed!");
+                        e2.printStackTrace();
+                    }
+                else if(e.getKeyCode() == KeyEvent.VK_F3)
                     stats = !stats;
-                }
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -1139,7 +1156,12 @@ public class Game extends JPanel {
          */
         if(this.image != null) {
             super.paintComponent(g);
-            g.drawImage(this.image, add, addy, wid, hei, null);
+            if(screenshot == -1)
+                g.drawImage(this.image, add, addy, wid, hei, null);
+            else if(screenshot >= 20)
+                screenshot = -1;
+            else
+                screenshot++;
 
             if(stats) { // print statistics
                 g.setColor(new Color(0f, 0f, 0f, 0.5f));
