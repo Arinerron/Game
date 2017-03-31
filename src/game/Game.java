@@ -312,40 +312,6 @@ public class Game extends JPanel {
                 if(running) {
                     tick();
 
-                    new Thread(new Runnable() {@Override public void run() {
-                        BufferedImage particles_front = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                        BufferedImage particles_back = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                        Graphics g1 = particles_front.getGraphics();
-                        Graphics g2 = particles_back.getGraphics();
-
-                        int mx = (int)(mousedx / 3) / 3; // I don't know why it need two /3's. TODO: debug.
-                        int my = (int)(mousedy / 3) / 3;
-
-                        int tilex = (int)(getTileX(real_width) / 2);
-                        int tiley = (int)(getTileY(real_height) / 2);
-
-                        double x = Game.this.x;
-                        double y = Game.this.y;
-
-                        // draw particles that are in front
-                        for(Particle particle : particles) {
-                            particle.tick();
-
-                            if(particle.front) {
-                                g1.setColor(particle.color);
-                                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
-                                g1.drawLine(px, py, px, py);
-                            } else {
-                                g2.setColor(particle.color);
-                                int px = (int)(particle.x + x + mx + tilex), py = (int)(particle.y + y + my + tiley);
-                                g2.drawLine(px, py, px, py);
-                            }
-                        }
-
-                        Game.this.particles_front = particles_front;
-                        Game.this.particles_back = particles_back;
-                    }}).start();
-
                     if(!threadlocked) {
                             boolean tilenull = tile == null;
 
