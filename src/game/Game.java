@@ -114,9 +114,9 @@ public class Game extends JPanel {
 
     public static void main(String[] args) {
         if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
-            tileeditor.Main.main(args);
+            tileeditor.Main.main(args); // they want the tileeditor
         else
-            new Game(args);
+            new Game(args); // start the game
     }
 
     // initialization with arguments
@@ -151,6 +151,7 @@ public class Game extends JPanel {
 
     // initialization
     public Game() {
+        // init tileset and map
         try {
             this.tile_null = getImage("tiles/null");
             this.character_spritesheet = getImage("character_spritesheet");
@@ -163,6 +164,7 @@ public class Game extends JPanel {
             System.exit(1);
         }
 
+        // setup jframe
         this.frame = new JFrame("Game");
         this.frame.setBackground(Color.BLACK);
         this.setBackground(Color.BLACK);
@@ -173,6 +175,7 @@ public class Game extends JPanel {
         this.frame.getContentPane().add(this);
         this.frame.pack();
 
+        // event listeners
         KeyListener listener = new KeyListener() {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_W) {
@@ -338,11 +341,14 @@ public class Game extends JPanel {
         this.setFocusable(true);
         this.requestFocus();
 
+        // setup tick timer
         new java.util.Timer().scheduleAtFixedRate(new java.util.TimerTask() { // yup, I had to specify the class
             public void run() {
                 if(running) {
+                    // tick the game dev off ;)
                     tick();
 
+                    // do particle stuff, and calculate speed
                     new Thread(new Runnable() {@Override public void run() {
                         BufferedImage particles_front = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                         BufferedImage particles_back = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
