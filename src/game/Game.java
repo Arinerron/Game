@@ -348,6 +348,8 @@ public class Game extends JPanel {
                     // tick the game dev off ;)
                     tick();
 
+                    dispatchEvent("ontouch");
+
                     // do particle stuff, and calculate speed
                     new Thread(new Runnable() {@Override public void run() {
                         BufferedImage particles_front = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -547,6 +549,7 @@ public class Game extends JPanel {
                             System.out.println("null!\nnull!\nnull!\nnull!\nnull!\nnull!\nnull!\nA severe error occured.");
                             System.exit(1);
                         }
+
                         updateImage();
                         threadlocked = false;
                     } else
@@ -617,9 +620,10 @@ public class Game extends JPanel {
 
     // reset and particles around player
     public void respawn() {
-        reset(); // Game game, double x, double y, Color color, int lifetime, int number
+        reset();
 
         dispatchEvent("ondeath");
+
 
         java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 100);
 
@@ -630,7 +634,7 @@ public class Game extends JPanel {
             particle.color = new Color(r, g, b);
             particle.xacceleration =  (Math.random() - 0.5) / 3;
             particle.yacceleration = (Math.random() - 0.5) / 3;
-            particle.lifetime = (int)(Math.random() * 150);
+            particle.lifetime = (int)(Math.random() * (Math.random() * (Math.random() * 600)));
             particle.front = random.nextBoolean();
 
             this.particles.add(particle);
