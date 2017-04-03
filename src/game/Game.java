@@ -624,7 +624,6 @@ public class Game extends JPanel {
 
         dispatchEvent("ondeath");
 
-
         java.util.List<Particle> particles = Particle.randomlySpread(this, x + half, y + half, Color.GREEN, 600, 100);
 
         for(Particle particle : particles) {
