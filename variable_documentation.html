@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>Game - Variable Documentation</title>
+	<meta name="author" content="arinerron"/>
+	<meta name="created" content="2017-04-14T10:00:29.393987772"/>
+	<meta name="changedby" content="arinerron"/>
+	<meta name="changed" content="2017-04-14T10:44:52.723450371"/>
+	
+	<style type="text/css">
+		body,div,table,thead,tbody,tfoot,tr,th,td,p { font-family:"Liberation Sans"; font-size:x-small }
+	</style>
+	
+</head>
+
+<body>
+<table cellspacing="0" border="0">
+	<colgroup width="114"></colgroup>
+	<colgroup width="97"></colgroup>
+	<colgroup width="507"></colgroup>
+	<tr>
+		<td height="17" align="right" bgcolor="#EEEEEE"><b>Type</b></td>
+		<td align="right" bgcolor="#EEEEEE"><b>Variable</b></td>
+		<td align="left" bgcolor="#EEEEEE"><b>Description</b></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">running</td>
+		<td align="left">Whether or not the game is runninng</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">threadlocked</td>
+		<td align="left">Whether or not the tick thread is already running.</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Jframe</td>
+		<td align="right">frame</td>
+		<td align="left">The Jframe that the game uses</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">slideover</td>
+		<td align="left">Whether or not to allow rightclicking panning/slideover</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">eightbit</td>
+		<td align="left">Enable dithering/eightbit conversion?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">stats</td>
+		<td align="left">Display statistics on the screen?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">frames</td>
+		<td align="left">The frame counter, iterates every frame</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">fps</td>
+		<td align="left">The number of frames generated every second</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">frames2</td>
+		<td align="left">The second frame counter, iterates every time it renders</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">fps2</td>
+		<td align="left">The number of frames displayed on the jframe every second</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">particlecount</td>
+		<td align="left">The number of particles, updated every second</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">rate</td>
+		<td align="left">How many milliseconds per tick?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">tick</td>
+		<td align="left">The current number of ticks</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">tilesize</td>
+		<td align="left">The width and height of each tile</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">width</td>
+		<td align="left">The width of the bufferedimage, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">height</td>
+		<td align="left">The height of the bufferedimage, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">characterwidth</td>
+		<td align="left">The size of the character</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">characterheight</td>
+		<td align="left">The size of the character</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">half</td>
+		<td align="left">Half of the tile's size</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">real_width</td>
+		<td align="left">The width of the actual screen, in terms of pixels</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">real_height</td>
+		<td align="left">The height of the actual screen, in terms of pixels</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">togo</td>
+		<td align="left">Ratio of real screen height to the size of the image</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">wid</td>
+		<td align="left">The width of the image times the ratio</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">hei</td>
+		<td align="left">The height of the image times the ratio</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">add</td>
+		<td align="left">The extra pixels on either the top or bottom</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">addy</td>
+		<td align="left">This is a pointless variable. TODO remove</td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">BufferedImage</td>
+		<td align="right">image</td>
+		<td align="left">The image that is currently rendered on the screen</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">List&lt;Tile&gt;</td>
+		<td align="right">tiles</td>
+		<td align="left">A list of all tile types in the game</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">BufferedImage</td>
+		<td align="right">tile_null</td>
+		<td align="left">The tile to render when there is no other tile available</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">character_id</td>
+		<td align="left">The current character's id of the texture to render</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">clicked</td>
+		<td align="left">Is left mouse button pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">rightclicked</td>
+		<td align="left">Is right mouse button pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">middleclicked</td>
+		<td align="left">Is middle mouse button pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">space</td>
+		<td align="left">Is space key pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">shift</td>
+		<td align="left">Is shift key pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">w</td>
+		<td align="left">Is w key pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">s</td>
+		<td align="left">Is s key pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">d</td>
+		<td align="left">Is d key pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">a</td>
+		<td align="left">Is a key pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">up</td>
+		<td align="left">Is up arrow pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">down</td>
+		<td align="left">Is down arrow pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">left</td>
+		<td align="left">Is left arrow pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">right</td>
+		<td align="left">Is right arrow pressed?</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">mousex</td>
+		<td align="left">The mouse x, in terms of pixels on screen</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">mousey</td>
+		<td align="left">The mouse y, in terms of pixels on screen</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">firstmousex</td>
+		<td align="left">Mouse x when right mouse button was first pressed</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">firstmousey</td>
+		<td align="left">Mouse y when right mouse button was first pressed</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">mousedx</td>
+		<td align="left">Mouse x when middle mouse button was first pressed</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">mousedy</td>
+		<td align="left">Mouse y when middle mouse button was first pressed</td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">char[][]</td>
+		<td align="right">map</td>
+		<td align="left">An array of chars that stores the map</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">x</td>
+		<td align="left">The x position of the character, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">y</td>
+		<td align="left">The y position of the character, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">spawnx</td>
+		<td align="left">The x position to spawn at when killed</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">spawny</td>
+		<td align="left">the y position to spawn at when killed</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Tile</td>
+		<td align="right">tile</td>
+		<td align="left">The tile that the character is currently on</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">char</td>
+		<td align="right">defaultchar</td>
+		<td align="left">The character to replace null tiles with, configured in tileset</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">visible</td>
+		<td align="left">Whether or not to render the character</td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">jumpingenabled</td>
+		<td align="left">Whether or not to allow jumping</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">jumptick</td>
+		<td align="left">How many ticks the user has been jumping</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">jumping</td>
+		<td align="left">Whether or not the character is currently jumping</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">jumpingup</td>
+		<td align="left">Whether the character is currently rising or falling while jumping</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">jumpboost</td>
+		<td align="left">How high the character is currently, due to jumping, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">jumpheight</td>
+		<td align="left">How high the character should jump</td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">screenshot</td>
+		<td align="left">-1=not screenshotting, otherwise, it is the number of ticks to display a black screen</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">boolean</td>
+		<td align="right">moving</td>
+		<td align="left">Whether or not the character is currently moving</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">int</td>
+		<td align="right">filter</td>
+		<td align="left">The darkness of the filter to display over the screen</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">acceleration</td>
+		<td align="left">The fastest the character should be able to walk</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">xacceleration</td>
+		<td align="left">The character's current acceleration per tick, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">double</td>
+		<td align="right">yacceleration</td>
+		<td align="left">The character's current acceleration per tick, in terms of tiles</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Color</td>
+		<td align="right">background</td>
+		<td align="left">The color to display behind the map, configured in map config</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Random</td>
+		<td align="right">random</td>
+		<td align="left">The java.math.Random instance for generating random numbers in the game</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Queue&lt;Particle&gt;</td>
+		<td align="right">particles</td>
+		<td align="left">A list of particles in the game</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Queue&lt;Entity&gt;</td>
+		<td align="right">entities</td>
+		<td align="left">A list of entities in the game</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">Queue&lt;Event&gt;</td>
+		<td align="right">events</td>
+		<td align="left">A list of events in the game</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">BufferedImage</td>
+		<td align="right">particles_front</td>
+		<td align="left">The image containing the particles that render in front of the player</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">BufferedImage</td>
+		<td align="right">particles_back</td>
+		<td align="left">The image containing the particles that render in back of the player</td>
+	</tr>
+	<tr>
+		<td height="17" align="right"><br></td>
+		<td align="right"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="right">String</td>
+		<td align="right">commands</td>
+		<td align="left">The string containing the commands from the tileset</td>
+	</tr>
+	<tr>
+		<td height="17" align="right">SoundPlayer</td>
+		<td align="right">player</td>
+		<td align="left">The SoundPlayer that plays the theme song</td>
+	</tr>
+</table>
+<!-- ************************************************************************** -->
+</body>
+
+</html>
