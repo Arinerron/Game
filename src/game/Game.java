@@ -70,6 +70,10 @@ public class Game extends JPanel {
     public boolean s = false;
     public boolean d = false;
     public boolean a = false;
+    public boolean up = false;
+    public boolean down = false;
+    public boolean right = false;
+    public boolean left = false;
 
     public int mousex = 0;
     public int mousey = 0;
@@ -178,74 +182,111 @@ public class Game extends JPanel {
         // event listeners
         KeyListener listener = new KeyListener() {
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_W) {
-                    w = true;
-                    character_current = character_up;
-                } else if(e.getKeyCode() == KeyEvent.VK_S) {
-                    s = true;
-                    character_current = character_down;
-                } else if(e.getKeyCode() == KeyEvent.VK_D) {
-                    d = true;
-                    character_current = character_right;
-                } else if(e.getKeyCode() == KeyEvent.VK_A) {
-                    a = true;
-                    character_current = character_left;
-                } else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
-                    System.exit(0);
-                else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    space = true;
-                } else if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    shift = true;
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_W:
+                        w = true;
+                    break;
+                    case KeyEvent.VK_UP:
+                        up = true;
+                    break;
+                    case KeyEvent.VK_S:
+                        s = true;
+                    break;
+                    case KeyEvent.VK_DOWN:
+                        down = true;
+                    break;
+                    case KeyEvent.VK_D:
+                        d = true;
+                    break;
+                    case KeyEvent.VK_RIGHT:
+                        right = true;
+                    break;
+                    case KeyEvent.VK_A:
+                        a = true;
+                    break;
+                    case KeyEvent.VK_LEFT:
+                        left = true;
+                    break;
+                    case KeyEvent.VK_ESCAPE:
+                        System.exit(0);
+                    break;
+                    case KeyEvent.VK_SPACE:
+                        space = true;
+                    break;
+                    case KeyEvent.VK_SHIFT:
+                        shift = true;
+                    break;
                 }
             }
 
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_W) { // todo make switch/case
-                    w = false;
-                    if(tile != null && !tile.slippery && !jumping)
-                        yacceleration = 0;
-                } else if(e.getKeyCode() == KeyEvent.VK_S) {
-                    s = false;
-                    if(tile != null && !tile.slippery && !jumping)
-                        yacceleration = 0;
-                } else if(e.getKeyCode() == KeyEvent.VK_D) {
-                    d = false;
-                    if(tile != null && !tile.slippery && !jumping)
-                        xacceleration = 0;
-                } else if(e.getKeyCode() == KeyEvent.VK_A) {
-                    a = false;
-                    if(tile != null && !(tile.slippery && !jumping))
-                        xacceleration = 0;
-                } else if(e.getKeyCode() == KeyEvent.VK_SPACE)
-                    space = false;
-                else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
-                    shift = false;
-                else if(e.getKeyCode() == KeyEvent.VK_R) {
-                    respawn();
-                } else if(e.getKeyCode() == KeyEvent.VK_B)
-                    eightbit = !eightbit;
-                else if(e.getKeyCode() == KeyEvent.VK_F2)
-                    try {
-                        File file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".png");
-                        int i = 0;
-                        while(file.exists()) {
-                            i++;
-                            file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + "_" + i + ".png");
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_W:
+                        w = false;
+                    break;
+                    case KeyEvent.VK_UP:
+                        up = false;
+                    break;
+                    case KeyEvent.VK_S:
+                        s = false;
+                    break;
+                    case KeyEvent.VK_DOWN:
+                        down = false;
+                    break;
+                    case KeyEvent.VK_D:
+                        d = false;
+                    break;
+                    case KeyEvent.VK_RIGHT:
+                        right = false;
+                    break;
+                    case KeyEvent.VK_A:
+                        a = false;
+                    break;
+                    case KeyEvent.VK_LEFT:
+                        left = false;
+                    break;
+                    case KeyEvent.VK_SPACE:
+                        space = false;
+                    break;
+                    case KeyEvent.VK_SHIFT:
+                        shift = false;
+                    break;
+                    case KeyEvent.VK_R:
+                        respawn();
+                    break;
+                    case KeyEvent.VK_B:
+                        eightbit = !eightbit;
+                    break;
+                    case KeyEvent.VK_F2:
+                        try {
+                            File file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".png");
+                            int i = 0;
+                            while(file.exists()) {
+                                i++;
+                                file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + "_" + i + ".png");
+                            }
+
+                            ImageIO.write(image, "png", file);
+
+                            screenshot = 0;
+                        } catch(Exception e2) {
+                            System.err.println("Screenshot failed!");
+                            e2.printStackTrace();
                         }
-
-                        ImageIO.write(image, "png", file);
-
-                        screenshot = 0;
-                    } catch(Exception e2) {
-                        System.err.println("Screenshot failed!");
-                        e2.printStackTrace();
-                    }
-                else if(e.getKeyCode() == KeyEvent.VK_F3)
-                    stats = !stats;
-                else if(e.getKeyCode() == KeyEvent.VK_F5)
-                    mainplayer.setVolume(mainplayer.getVolume() - 7f);
-                else if(e.getKeyCode() == KeyEvent.VK_F6)
-                    mainplayer.setVolume(mainplayer.getVolume() + 7f);
+                    break;
+                    /*case KeyEvent.VK_F5:
+                        mainplayer.setVolume(mainplayer.getVolume() - 7f);
+                    break;
+                    case KeyEvent.VK_F6:
+                        mainplayer.setVolume(mainplayer.getVolume() + 7f);
+                    break;*/
+                    case KeyEvent.VK_F3:
+                        stats = !stats;
+                }
+                if(a == false && left == false && d == false && right == false && !(tile.slippery && !jumping))
+                    xacceleration = 0;
+                if(w == false && up == false && s == false && down == false && !(tile.slippery && !jumping))
+                    yacceleration = 0;
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -452,20 +493,20 @@ public class Game extends JPanel {
                             if(!(tilenull || tile.slideover))
                                 middleclicked = false;
 
-                            if(w) {
+                            if(w || up) {
                                 yacceleration += acceleration;
                             }
-                            if(s) {
+                            if(s || down) {
                                 yacceleration -= acceleration;
                             }
-                            if(a) {
+                            if(a || left) {
                                 xacceleration += acceleration;
                             }
-                            if(d) {
+                            if(d || right) {
                                 xacceleration -= acceleration;
                             }
 
-                            if(jumping && !(w || a || s || d)) {
+                            if(jumping && !(w || a || s || d || up || down || left || right)) {
                                 xacceleration = xacceleration * 0.92;
                                 yacceleration = yacceleration * 0.92;
                             }
@@ -1566,53 +1607,53 @@ class Entity {
     public double yacceleration = 0;
     public Game game = null;
     public Random random = new Random();
-    public Queue<EntityState> states = new ConcurrentLinkedQueue<>();
-
+    public EntityState state = EntityState.STILL;
+    public int speed = 0;
+    public int walkCounter = 0;
+    
     // init Entity
     public Entity(Game game) {
         this.game = game;
     }
-
+    
     // Every tick, this function decides how the entity will react
     public void tick(int tick) {
-        for(EntityState state : states)
-            switch(state) {
-                case FOLLOW:
-                    break;
-                case RUN:
-                    break;
-                case STILL:
-                    xacceleration = 0;
-                    yacceleration = 0;
-                    break;
-                default:
-                    xacceleration = 0;
-                    yacceleration = 0;
-                    break;
-            }
+        switch(state) {
+            case FOLLOW:
+                break;
+            case MOVE:
+                if(walkCounter == 0) {
+                    walkCounter = 20;
+                    double dir = random.nextDouble() * 3.1415d;
+                    xacceleration = Math.cos(dir) * speed;
+                    yacceleration = Math.sin(dir) * speed;
+                } else {
+                    x += xacceleration;
+                    y += yacceleration;
+                }
+                break;
+            case STILL:
+                xacceleration = 0;
+                yacceleration = 0;
+                break;
+            default:
+                xacceleration = 0;
+                yacceleration = 0;
+                break;
+        }
     }
-
-    // add a state
-    public void addState(EntityState state) {
-        states.add(state);
-    }
-
-    // remove a state
-    public void removeState(EntityState state) {
-        states.remove(state);
-    }
-
+    
     // delete and add a state
     public void setState(EntityState state) {
-        states.clear();
-        addState(state);
+        this.state = state;
     }
 }
 
-enum EntityState  {
+enum EntityState {
     FOLLOW,
-    RUN,
-    STILL
+    MOVE,
+    STILL,
+    ATTACK
 }
 
 class Event {

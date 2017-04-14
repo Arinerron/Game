@@ -104,13 +104,13 @@ public class Main {
                         if(colormap[x * ymax + y + 1] == 48) {
                             g.setColor(Color.white);
                             g.fillRect(x * pixelsize, y * pixelsize, pixelsize / 2, pixelsize / 2);
-                            g.fillRect(x * pixelsize + pixelsize / 2, y * pixelsize + pixelsize / 2, pixelsize / 2, pixelsize / 2);
+                            g.fillRect(x * pixelsize + pixelsize / 2, y * pixelsize + pixelsize / 2, pixelsize / 2 + 1, pixelsize / 2 + 1);
                             g.setColor(colors[48]);
-                            g.fillRect(x * pixelsize, y * pixelsize + pixelsize / 2, pixelsize / 2, pixelsize / 2);
-                            g.fillRect(x * pixelsize + pixelsize / 2, y * pixelsize, pixelsize / 2, pixelsize / 2);
+                            g.fillRect(x * pixelsize, y * pixelsize + pixelsize / 2, pixelsize / 2, pixelsize / 2 + 1);
+                            g.fillRect(x * pixelsize + pixelsize / 2, y * pixelsize, pixelsize / 2 + 1, pixelsize / 2);
                         } else {
                             g.setColor(colors[colormap[x * ymax + y + 1]]);
-                            g.fillRect(x * pixelsize, y * pixelsize, pixelsize, pixelsize);
+                            g.fillRect(x * pixelsize, y * pixelsize, pixelsize + 1, pixelsize + 1);
                         }
                     }
                 }
