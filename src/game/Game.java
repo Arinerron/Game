@@ -23,6 +23,7 @@ public class Game extends JPanel {
     public boolean slideover = true;
     public boolean eightbit = false;
     public boolean stats = false;
+    public boolean dev = true; // disable music, show stats
     public int frames = 0;
     public int fps = 0;
     public int frames2 = 0;
@@ -141,6 +142,12 @@ public class Game extends JPanel {
                     case "-p":
                     case "--nopan":
                         slideover = false;
+                        break;
+                    case "-r":
+                    case "--dev":
+                    case "--development":
+                    case "--developer":
+                        dev = true;
                         break;
                     default:
                         System.out.println("Unknown parameter \"" + split[0] + "\" for game arguments.");
@@ -622,7 +629,7 @@ public class Game extends JPanel {
 
         // audio playing thread
         new Thread(new Runnable() {@Override public void run() {
-            if(mainplayer != null)
+            if(mainplayer != null && !dev)
                 mainplayer.loop();
         }}).start();
 
@@ -1077,6 +1084,8 @@ public class Game extends JPanel {
             }
         }
 
+        if(this.tiles != null) // null check
+            this.tiles.clear(); // save memory
         this.tiles = tiles;
         commands = builder.toString().replace(" ", "").replace("\n", "");
     }
@@ -1236,7 +1245,7 @@ public class Game extends JPanel {
             else
                 screenshot++;
 
-            if(stats) { // print statistics
+            if(stats || dev) { // print statistics
                 g.setColor(new Color(0f, 0f, 0f, 0.5f));
                 g.fillRect(0, 0, 175, 95);
                 g.setColor(Color.GREEN);
@@ -1246,6 +1255,9 @@ public class Game extends JPanel {
                 g.drawString("Tick: " + tick, 15, 50);
                 g.drawString("Position: [" + -(int)x + ", " + -(int)y + "]", 15, 65);
                 g.drawString("Tile: [" + -(int)(x / tilesize) + ", " + -(int)(y / tilesize) + "]", 15, 80);
+
+                if(dev)
+                    g.drawString("DEV MODE", 15, real_height - 2);
             }
         }
 
@@ -1610,12 +1622,12 @@ class Entity {
     public EntityState state = EntityState.STILL;
     public int speed = 0;
     public int walkCounter = 0;
-    
+
     // init Entity
     public Entity(Game game) {
         this.game = game;
     }
-    
+
     // Every tick, this function decides how the entity will react
     public void tick(int tick) {
         switch(state) {
@@ -1642,7 +1654,7 @@ class Entity {
                 break;
         }
     }
-    
+
     // delete and add a state
     public void setState(EntityState state) {
         this.state = state;
