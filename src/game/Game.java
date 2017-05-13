@@ -117,6 +117,10 @@ public class Game extends JPanel {
     public String commands = "";
     public SoundPlayer mainplayer = null;
 
+    public boolean console = false;
+    public String console_text = "";
+    public int console_height = 100;
+
     public static void main(String[] args) {
         if(args.length != 0 && (args[0].equalsIgnoreCase("--tileeditor") || args[0].equalsIgnoreCase("-e")))
             tileeditor.Main.main(args); // they want the tileeditor
@@ -189,6 +193,7 @@ public class Game extends JPanel {
         // event listeners
         KeyListener listener = new KeyListener() {
             public void keyPressed(KeyEvent e) {
+                if(!console)
                 switch(e.getKeyCode()) {
                     case KeyEvent.VK_W:
                         w = true;
@@ -214,9 +219,6 @@ public class Game extends JPanel {
                     case KeyEvent.VK_LEFT:
                         left = true;
                     break;
-                    case KeyEvent.VK_ESCAPE:
-                        System.exit(0);
-                    break;
                     case KeyEvent.VK_SPACE:
                         space = true;
                     break;
@@ -227,6 +229,7 @@ public class Game extends JPanel {
             }
 
             public void keyReleased(KeyEvent e) {
+                if(!console)
                 switch(e.getKeyCode()) {
                     case KeyEvent.VK_W:
                         w = false;
@@ -264,6 +267,18 @@ public class Game extends JPanel {
                     case KeyEvent.VK_B:
                         eightbit = !eightbit;
                     break;
+                }
+
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER:
+                        if(console) {
+                            console = false;
+
+                            if(!console_text.startsWith("/"))
+                                executeFunction("go (\n" + console_text + "\n)", "go"); // TODO: Test to see if the \n can be removed
+                        }
+
+                        break;
                     case KeyEvent.VK_F2:
                         try {
                             File file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".png");
@@ -281,19 +296,44 @@ public class Game extends JPanel {
                             e2.printStackTrace();
                         }
                     break;
-                    /*case KeyEvent.VK_F5:
+                    case KeyEvent.VK_F5:
                         mainplayer.setVolume(mainplayer.getVolume() - 7f);
-                    break;
+                        break;
                     case KeyEvent.VK_F6:
                         mainplayer.setVolume(mainplayer.getVolume() + 7f);
-                    break;*/
+                        break;
                     case KeyEvent.VK_F3:
                         stats = !stats;
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        if(!console)
+                            System.exit(0);
+                        console = false;
+                    break;
+                    case KeyEvent.VK_SLASH:
+                    case KeyEvent.VK_T:
+                        if(!console) { // could remove this line, but might be useful later for only allowing console to open sometimes
+                            console = true;
+                            console_text = "/"; // set the default text here
+                            return;
+                        }
+                        break;
                 }
+
                 if(a == false && left == false && d == false && right == false && !(tile.slippery && !jumping))
                     xacceleration = 0;
                 if(w == false && up == false && s == false && down == false && !(tile.slippery && !jumping))
                     yacceleration = 0;
+
+                if(console) {
+                    int code = e.getKeyCode();
+                    if(code == KeyEvent.VK_BACK_SPACE) {
+                        if(console_text.length() >= 1)
+                            console_text = console_text.substring(0, console_text.length() - 1);
+                    } else if(e.getKeyChar() != '\uFFFF' && e.getKeyCode() != KeyEvent.VK_DELETE) {
+                        console_text += e.getKeyChar();
+                    }
+                }
             }
 
             public void keyTyped(KeyEvent e) {}
@@ -1226,7 +1266,9 @@ public class Game extends JPanel {
         }
     }
 
+    // TODO: Move to top
     public Font monospaced = new Font("Monospaced", Font.PLAIN, 12);
+    public Font console_font = new Font("Monospaced", Font.PLAIN, (int)(console_height / 2));
 
     // draw whatever is in the image variable
     public void paintComponent(Graphics g) {
@@ -1259,9 +1301,28 @@ public class Game extends JPanel {
                 if(dev)
                     g.drawString("DEV MODE", 15, real_height - 2);
             }
+
+            if(console) {
+                BufferedImage con = console();
+                g.drawImage(con, 0, real_height - console_height - 15, null); // [consjump]
+            }
         }
 
         frames2++;
+    }
+
+    // generates an image of the console, if requested
+    public BufferedImage console() {
+        BufferedImage con = new BufferedImage(real_width, console_height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = con.getGraphics();
+
+        g.setColor(new Color(0f, 0f, 0f, 0.5f));
+        g.fillRect(0, 0, real_width, console_height);
+        g.setColor(Color.GREEN);
+        g.setFont(console_font);
+        g.drawString(console_text, 15, (int)(console_height / 2));
+
+        return con;
     }
 
     // returns the value of a tile at x and y
