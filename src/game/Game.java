@@ -592,14 +592,14 @@ public class Game extends JPanel {
                                     // System.out.println(spacing + " " + tilesize + " " + characterwidth);spacing = 8;
 
                                     x += xacceleration;
-                                    Tile current1 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
+                                    Tile current1 = getTile(getTile((int)((x + (spacing / 3)) / tilesize),(int)(y / tilesize)));
                                     Tile current2 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
 
                                     if(current1.solid || current2.solid)
                                         x = oldx;
 
                                     y += yacceleration;
-                                    current1 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
+                                    current1 = getTile(getTile((int)((x + (spacing / 3)) / tilesize),(int)(y / tilesize)));
                                     current2 = getTile(getTile((int)((x + spacing) / tilesize),(int)(y / tilesize)));
 
                                     if(current1.solid || current2.solid)
