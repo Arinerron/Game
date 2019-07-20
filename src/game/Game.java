@@ -281,11 +281,11 @@ public class Game extends JPanel {
                         break;
                     case KeyEvent.VK_F2:
                         try {
-                            File file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".png");
+                            File file = new File("/tmp/screenshot-" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".png");
                             int i = 0;
                             while(file.exists()) {
                                 i++;
-                                file = new File("../res/screenshots/" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + "_" + i + ".png");
+                                file = new File("/tmp/screenshot-" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + "_" + i + ".png");
                             }
 
                             ImageIO.write(image, "png", file);
