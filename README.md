@@ -3,6 +3,12 @@ Just some random game without a name I feel like making. That's right, in one cl
 
 # Installing Game
 ```
+trizen -S game-git
+```
+
+or
+
+```
 git clone https://github.com/Arinerron/Game.git && cd Game
 ```
 

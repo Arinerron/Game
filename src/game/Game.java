@@ -669,7 +669,7 @@ public class Game extends JPanel {
 
         // audio playing thread
         new Thread(new Runnable() {@Override public void run() {
-            if(mainplayer != null && !dev)
+            if(mainplayer != null)// && !dev)
                 mainplayer.loop();
         }}).start();
 
